@@ -420,6 +420,35 @@ export function canShareFiles(nav: Navigator = navigator): boolean {
 }
 
 /**
+ * True on an iPhone or iPad, where a download lands in the Files app instead of Photos.
+ * iPadOS reports a Mac user agent, so a Mac with a touch screen counts as an iPad.
+ */
+export function isAppleMobile(nav: Navigator = navigator): boolean {
+  const userAgent = nav.userAgent ?? ''
+  if (/iPhone|iPad|iPod/.test(userAgent)) return true
+  return /Macintosh/.test(userAgent) && (nav.maxTouchPoints ?? 0) > 1
+}
+
+/**
+ * Open the share sheet when it accepts this data.
+ * Returns null when sharing is unsupported or fails for any reason other than the user dismissing the sheet.
+ */
+async function tryShare(data: ShareData, nav: Navigator): Promise<'shared' | 'cancelled' | null> {
+  if (!canShareFiles(nav) || !nav.canShare(data)) return null
+  try {
+    await nav.share(data)
+    return 'shared'
+  } catch (error) {
+    if (error instanceof DOMException && error.name === 'AbortError') return 'cancelled'
+    return null
+  }
+}
+
+function pngFile(blob: Blob, filename: string): File {
+  return new File([blob], filename, { type: 'image/png' })
+}
+
+/**
  * Share via the Web Share API when files are supported; otherwise download.
  * Returns which path was taken, or "cancelled" if the user dismissed the share sheet.
  */
@@ -429,18 +458,26 @@ export async function shareOrDownload(
   payload: { title: string; text: string },
   nav: Navigator = navigator,
 ): Promise<'shared' | 'downloaded' | 'cancelled'> {
-  if (canShareFiles(nav)) {
-    const file = new File([blob], filename, { type: 'image/png' })
-    const data: ShareData = { files: [file], title: payload.title, text: payload.text }
-    if (nav.canShare(data)) {
-      try {
-        await nav.share(data)
-        return 'shared'
-      } catch (error) {
-        if (error instanceof DOMException && error.name === 'AbortError') return 'cancelled'
-        /* fall through to download on any other failure */
-      }
-    }
+  const outcome = await tryShare({ files: [pngFile(blob, filename)], title: payload.title, text: payload.text }, nav)
+  if (outcome) return outcome
+  downloadBlob(blob, filename)
+  return 'downloaded'
+}
+
+/**
+ * Save the image where the player keeps photos.
+ * On an iPhone or iPad, open the share sheet with only the image, because its first action, "Save Image", adds it to Photos.
+ * Sharing text along with the image can hide that action, so no title or text is sent.
+ * Everywhere else, and when the share sheet is unavailable, download the file.
+ */
+export async function saveImage(
+  blob: Blob,
+  filename: string,
+  nav: Navigator = navigator,
+): Promise<'shared' | 'downloaded' | 'cancelled'> {
+  if (isAppleMobile(nav)) {
+    const outcome = await tryShare({ files: [pngFile(blob, filename)] }, nav)
+    if (outcome) return outcome
   }
   downloadBlob(blob, filename)
   return 'downloaded'

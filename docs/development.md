@@ -54,7 +54,7 @@ The suite lives in `src/tests/` and runs in jsdom with Vue Test Utils.
 | `board.test`     | Shuffle, dealing, board structure, independence, stability.                                          |
 | `bingo.test`     | Winning-line evaluation.                                                                             |
 | `storage.test`   | Validation, old saves, auto-save, reload, restart, corruption, missing storage, reveal flag.         |
-| `export.test`    | Wrapping, drawing in both languages, icon marks matching Lucide, share fallback.                     |
+| `export.test`    | Wrapping, drawing in both languages, icon marks matching Lucide, share fallback, iPhone photo save.  |
 
 Helpers in `helpers.ts`:
 

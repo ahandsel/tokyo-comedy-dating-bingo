@@ -13,7 +13,7 @@ import { useLocale } from '../composables/useLocale'
 import { getQuestionText } from '../data/questions'
 import { FREE, type Answer } from '../types/game'
 import { isCellMarked } from '../utils/bingo'
-import { canShareFiles, downloadBlob, renderBoardImage, shareOrDownload, type ExportLabels } from '../utils/exportImage'
+import { canShareFiles, renderBoardImage, saveImage, shareOrDownload, type ExportLabels } from '../utils/exportImage'
 
 const { t } = useI18n()
 const { locale } = useLocale()
@@ -127,8 +127,13 @@ function exportLabels(): ExportLabels {
     freeSpace: t('results.freeSpace'),
     yesMark: t('results.markedYes'),
     noMark: t('results.markedNo'),
-    footer: t('results.exportFooter', { url: typeof location !== 'undefined' ? location.href.replace(/[#?].*$/, '') : '' }),
+    footer: t('results.exportFooter', { url: appUrl() }),
   }
+}
+
+/** The address of the game without a query or a fragment, so no answers can travel with it. */
+function appUrl(): string {
+  return typeof location !== 'undefined' ? location.href.replace(/[#?].*$/, '') : ''
 }
 
 function filename(): string {
@@ -155,6 +160,7 @@ function shareText(): string {
     no: s.no,
     lines: s.winningLines,
     verdict: result.value.hasBingo ? t('results.shareBingo') : t('results.shareNoBingo'),
+    url: appUrl(),
   })
 }
 
@@ -164,8 +170,9 @@ async function onDownload() {
   showStatus(t('results.exporting'), LoaderCircle)
   try {
     const blob = await createImage()
-    downloadBlob(blob, filename())
-    showStatus(t('results.exportSuccess'), CircleCheck)
+    const outcome = await saveImage(blob, filename())
+    if (outcome === 'cancelled') showStatus(t('results.saveCancelled'))
+    else showStatus(t('results.exportSuccess'), CircleCheck)
   } catch {
     showStatus(t('results.exportError'), TriangleAlert)
   } finally {

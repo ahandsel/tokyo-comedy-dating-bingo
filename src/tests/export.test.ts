@@ -3,7 +3,7 @@ import { mount } from '@vue/test-utils'
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
 import { createAppI18n } from '../i18n'
 import { getQuestionText } from '../data/questions'
-import { drawBoardImage, EXPORT_ICON_PATHS, shareOrDownload, tokenize, wrapText, type ExportOptions } from '../utils/exportImage'
+import { drawBoardImage, EXPORT_ICON_PATHS, isAppleMobile, saveImage, shareOrDownload, tokenize, wrapText, type ExportOptions } from '../utils/exportImage'
 import { generateBoard } from '../utils/board'
 import { evaluateBoard } from '../utils/bingo'
 import { QUESTION_IDS } from '../data/questions'
@@ -183,26 +183,38 @@ describe('drawBoardImage', () => {
   })
 })
 
+/** Runs `action` with downloads stubbed out, and returns the file names it downloaded. */
+async function captureDownloads(action: () => Promise<unknown>): Promise<string[]> {
+  const clicks: string[] = []
+  const origCreate = URL.createObjectURL
+  const origRevoke = URL.revokeObjectURL
+  URL.createObjectURL = () => 'blob:fake'
+  URL.revokeObjectURL = () => undefined
+  const origClick = HTMLAnchorElement.prototype.click
+  HTMLAnchorElement.prototype.click = function () {
+    clicks.push(this.download)
+  }
+  try {
+    await action()
+    return clicks
+  } finally {
+    URL.createObjectURL = origCreate
+    URL.revokeObjectURL = origRevoke
+    HTMLAnchorElement.prototype.click = origClick
+  }
+}
+
+const IPHONE_UA = 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1'
+const MAC_UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Safari/605.1.15'
+
 describe('shareOrDownload', () => {
   it('falls back to download when the Web Share API is unavailable', async () => {
-    const clicks: string[] = []
-    const origCreate = URL.createObjectURL
-    const origRevoke = URL.revokeObjectURL
-    URL.createObjectURL = () => 'blob:fake'
-    URL.revokeObjectURL = () => undefined
-    const origClick = HTMLAnchorElement.prototype.click
-    HTMLAnchorElement.prototype.click = function () {
-      clicks.push(this.download)
-    }
-    try {
-      const outcome = await shareOrDownload(new Blob(['x']), 'card.png', { title: 't', text: 'x' }, {} as Navigator)
-      expect(outcome).toBe('downloaded')
-      expect(clicks).toEqual(['card.png'])
-    } finally {
-      URL.createObjectURL = origCreate
-      URL.revokeObjectURL = origRevoke
-      HTMLAnchorElement.prototype.click = origClick
-    }
+    let outcome = ''
+    const clicks = await captureDownloads(async () => {
+      outcome = await shareOrDownload(new Blob(['x']), 'card.png', { title: 't', text: 'x' }, {} as Navigator)
+    })
+    expect(outcome).toBe('downloaded')
+    expect(clicks).toEqual(['card.png'])
   })
 
   it('uses navigator.share when files are supported', async () => {
@@ -211,5 +223,65 @@ describe('shareOrDownload', () => {
     const outcome = await shareOrDownload(new Blob(['x']), 'card.png', { title: 't', text: 'x' }, nav)
     expect(outcome).toBe('shared')
     expect(share).toHaveBeenCalledOnce()
+  })
+})
+
+describe('saveImage', () => {
+  const shareNav = (userAgent: string, maxTouchPoints: number, share = vi.fn(async (_data: ShareData) => undefined)) =>
+    ({ userAgent, maxTouchPoints, share, canShare: () => true }) as unknown as Navigator
+
+  it('detects an iPhone, and an iPad that reports a Mac user agent', () => {
+    expect(isAppleMobile(shareNav(IPHONE_UA, 5))).toBe(true)
+    expect(isAppleMobile(shareNav(MAC_UA, 5))).toBe(true)
+    expect(isAppleMobile(shareNav(MAC_UA, 0))).toBe(false)
+    expect(isAppleMobile({} as Navigator)).toBe(false)
+  })
+
+  it('opens the share sheet with only the image on an iPhone, so it can go to Photos', async () => {
+    const share = vi.fn(async (_data: ShareData) => undefined)
+    let outcome = ''
+    const clicks = await captureDownloads(async () => {
+      outcome = await saveImage(new Blob(['x']), 'card.png', shareNav(IPHONE_UA, 5, share))
+    })
+    expect(outcome).toBe('shared')
+    expect(clicks).toEqual([])
+    const data = share.mock.calls[0]![0]
+    expect(Object.keys(data)).toEqual(['files'])
+    expect(data.files?.map((file) => [file.name, file.type])).toEqual([['card.png', 'image/png']])
+  })
+
+  it('reports a dismissed share sheet on an iPhone without downloading', async () => {
+    const share = vi.fn(async () => {
+      throw new DOMException('dismissed', 'AbortError')
+    })
+    let outcome = ''
+    const clicks = await captureDownloads(async () => {
+      outcome = await saveImage(new Blob(['x']), 'card.png', shareNav(IPHONE_UA, 5, share))
+    })
+    expect(outcome).toBe('cancelled')
+    expect(clicks).toEqual([])
+  })
+
+  it('downloads on a computer even when the Web Share API supports files', async () => {
+    const share = vi.fn(async (_data: ShareData) => undefined)
+    let outcome = ''
+    const clicks = await captureDownloads(async () => {
+      outcome = await saveImage(new Blob(['x']), 'card.png', shareNav(MAC_UA, 0, share))
+    })
+    expect(outcome).toBe('downloaded')
+    expect(clicks).toEqual(['card.png'])
+    expect(share).not.toHaveBeenCalled()
+  })
+
+  it('downloads on an iPhone when the share sheet fails', async () => {
+    const share = vi.fn(async () => {
+      throw new Error('not allowed')
+    })
+    let outcome = ''
+    const clicks = await captureDownloads(async () => {
+      outcome = await saveImage(new Blob(['x']), 'card.png', shareNav(IPHONE_UA, 5, share))
+    })
+    expect(outcome).toBe('downloaded')
+    expect(clicks).toEqual(['card.png'])
   })
 })

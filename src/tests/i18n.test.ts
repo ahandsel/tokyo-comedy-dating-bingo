@@ -275,14 +275,15 @@ describe('credits', () => {
     wrapper.unmount()
   })
 
-  it('credits Tokyo Hoe Tales in the share text in both languages', () => {
+  it('credits Tokyo Hoe Tales and links to the game in the share text in both languages', () => {
     const i18n = createAppI18n('en')
-    expect(i18n.global.t('results.shareText', { yes: 10, no: 14, lines: 2, verdict: 'BINGO!' })).toBe(
-      'My Tokyo Comedy Dating Bingo: Yes 10, No 14, Bingo lines 2. BINGO! A fan-made game inspired by Tokyo Hoe Tales, the comedy show by Yurié Collins.',
+    const url = 'https://example.com/tokyo-comedy-dating-bingo/'
+    expect(i18n.global.t('results.shareText', { yes: 10, no: 14, lines: 2, verdict: 'BINGO!', url })).toBe(
+      'My Tokyo Comedy Dating Bingo: Yes 10, No 14, Bingo lines 2. BINGO! A fan-made game inspired by Tokyo Hoe Tales, the comedy show by Yurié Collins. Play at https://example.com/tokyo-comedy-dating-bingo/',
     )
     i18n.global.locale.value = 'ja'
-    expect(i18n.global.t('results.shareText', { yes: 10, no: 14, lines: 2, verdict: 'ビンゴ達成！' })).toBe(
-      '私のTokyo Comedy Dating Bingo：はい10、いいえ14、ビンゴ2。ビンゴ達成！ユリエ コリンズのコメディショー「Tokyo Hoe Tales」に着想を得たファンメイドゲーム。',
+    expect(i18n.global.t('results.shareText', { yes: 10, no: 14, lines: 2, verdict: 'ビンゴ達成！', url })).toBe(
+      '私のTokyo Comedy Dating Bingo：はい10、いいえ14、ビンゴ2。ビンゴ達成！ユリエ コリンズのコメディショー「Tokyo Hoe Tales」に着想を得たファンメイドゲーム。プレイはこちら：https://example.com/tokyo-comedy-dating-bingo/',
     )
   })
 })

@@ -75,10 +75,19 @@ It is a pure function of its options, which is what the tests exercise with a fa
 `shareOrDownload(blob, filename, payload)` uses the Web Share API when `navigator.canShare` accepts a file (mobile Safari, Chrome on Android, macOS Safari).
 Dismissing the share sheet returns `cancelled`; any other failure, or no file support, falls back to `downloadBlob`, which clicks a temporary `<a download>` link.
 The Share button is only rendered when `canShareFiles()` is true.
+The share text ends with a link to the game: `appUrl()` in `ResultsView.vue` takes the page address and drops any query or fragment, so no answers can travel with it.
+The link goes in the text rather than in the `url` field of the share data, because many apps drop that field when the share also carries a file.
+
+`saveImage(blob, filename)` backs the "Save image" button.
+On an iPhone or iPad, a download lands in the Files app, so `saveImage` opens the share sheet with only the image instead, and its first action, "Save Image", adds the image to Photos.
+It sends no title or text, because extra text can hide that action.
+`isAppleMobile()` detects the device from the user agent, and it also treats a Mac user agent with a touch screen as an iPad, because iPadOS reports itself as a Mac.
+Everywhere else, and whenever the share sheet is unavailable or fails, `saveImage` calls `downloadBlob`.
+Dismissing the share sheet returns `cancelled`, and the status line then says that the image was not saved.
 
 
 ## Tests
 
 * `src/tests/board.test.ts` - shuffle, dealing, structure, independence from answers and order, stability across reloads and edits.
 * `src/tests/bingo.test.ts` - every line type, the free centre, all NO, all YES, overlapping wins, four in a row.
-* `src/tests/export.test.ts` - tokenizing, wrapping, drawing all 25 cells in both languages, the icon marks and their match with `@lucide/vue`, the share fallback.
+* `src/tests/export.test.ts` - tokenizing, wrapping, drawing all 25 cells in both languages, the icon marks and their match with `@lucide/vue`, the share fallback, and saving to Photos on an iPhone.
