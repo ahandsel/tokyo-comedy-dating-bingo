@@ -175,6 +175,7 @@ function splitTokens(text: string): string[] {
 /**
  * Greedy word/character wrapping. `measure` returns the pixel width of a string.
  * Works for English (word breaks) and Japanese (character breaks).
+ * A word wider than the line is split by character wherever it falls.
  */
 export function wrapText(text: string, maxWidth: number, measure: (s: string) => number): string[] {
   const lines: string[] = []
@@ -189,18 +190,14 @@ export function wrapText(text: string, maxWidth: number, measure: (s: string) =>
       line += ' '
       continue
     }
-    if (measure(line + token) <= maxWidth || line.trim() === '') {
-      if (measure(token) > maxWidth) {
-        for (const ch of token) {
-          if (measure(line + ch) > maxWidth && line.trim() !== '') push()
-          line += ch
-        }
-      } else {
-        line += token
+    if (measure(line + token) > maxWidth && line.trim() !== '') push()
+    if (measure(token) > maxWidth) {
+      for (const ch of token) {
+        if (measure(line + ch) > maxWidth && line.trim() !== '') push()
+        line += ch
       }
     } else {
-      push()
-      line = token
+      line += token
     }
   }
   push()
@@ -215,6 +212,12 @@ function roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: numbe
   ctx.arcTo(x, y + h, x, y, r)
   ctx.arcTo(x, y, x + w, y, r)
   ctx.closePath()
+}
+
+/** Background color of one board square: berry for the free square, rose for Yes, and muted for No. */
+function cellFill(isFree: boolean, marked: boolean): string {
+  if (isFree) return COLORS.berry
+  return marked ? COLORS.rose : COLORS.muted
 }
 
 function fitLines(
@@ -315,7 +318,7 @@ export function drawBoardImage(ctx: CanvasRenderingContext2D, options: ExportOpt
     const marked = isCellMarked(cell, options.answers)
 
     roundRect(ctx, x, y, cellSize, cellSize, Math.round(cellSize * 0.1))
-    ctx.fillStyle = isFree ? COLORS.berry : marked ? COLORS.rose : COLORS.muted
+    ctx.fillStyle = cellFill(isFree, marked)
     ctx.fill()
     if (winning.has(i)) {
       ctx.lineWidth = Math.max(4, cellSize * 0.04)

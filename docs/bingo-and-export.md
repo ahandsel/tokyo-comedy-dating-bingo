@@ -44,6 +44,7 @@ The free centre is never counted in the YES total shown in the statistics; it on
 `BingoBoard` builds a `CellView` per square (text for the current locale, marked, winning) and renders five rows of `BingoCell` buttons inside a `role="grid"`.
 Arrow keys, Home, and End move focus between cells.
 Tapping a cell opens `CellDetailModal`, which shows the full text and offers "Change to Yes" or "Change to No".
+The dialog opens with focus on "Close", so when the Enter press that opened it repeats, it closes the dialog instead of changing the answer.
 
 
 ## Image export (`utils/exportImage.ts`)
@@ -55,8 +56,9 @@ It is a pure function of its options, which is what the tests exercise with a fa
 * Every string comes in through `ExportLabels`, already translated by the caller, plus a `getText(id)` callback for question labels.
   The export therefore matches the language selected on screen.
 * `tokenize` splits English on spaces and CJK characters one by one, and `wrapText` greedily wraps with a `measure` callback.
+  A word wider than the line is split by character, whether it starts the line or follows another word.
   `fitLines` shrinks the font step by step until the text fits the allowed number of lines, then adds an ellipsis as a last resort.
-* Marked cells are rose, the free centre is berry, winning cells get a double gold outline and a star.
+* Marked cells are rose, the free centre is berry, and winning cells get a double gold outline and a star.
 * The check, cross, heart, and star marks are the same Lucide icons that the board and the statistics show on screen.
   `src/utils/` must not import Vue, so the module copies their SVG path data into `EXPORT_ICON_PATHS` and draws each one with `Path2D`.
 

@@ -38,6 +38,10 @@ describe('text wrapping', () => {
   it('splits words longer than the line', () => {
     expect(wrapText('Supercalifragilistic', 50, measure)).toEqual(['Super', 'calif', 'ragil', 'istic'])
   })
+
+  it('splits a word longer than the line when it follows another word', () => {
+    expect(wrapText('a Supercalifragilistic', 50, measure)).toEqual(['a', 'Super', 'calif', 'ragil', 'istic'])
+  })
 })
 
 /** jsdom has no Path2D, so this stand-in only remembers the path data it was given. */
