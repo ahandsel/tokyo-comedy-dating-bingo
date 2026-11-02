@@ -1,19 +1,26 @@
 # Bonus cards idea
 
 This note proposes two bonus cards that give Tokyo Comedy Bar and Yurié Collins a shoutout inside the game, and it compares three ways to add them.
-It is an idea, not a decision, and none of the three options is built yet.
+Option A is built: `q28` and `q29` are in the question pool in `src/data/questions.ts`.
+Options B and C are not built, and they stay here as fallbacks if option A does not work out.
+See "Status" for the checks that remain before the cards ship.
 The results-screen shoutout that links to both is already built; see "Results screen" in [bingo-and-export.md](bingo-and-export.md).
 
 
 ## The two cards
 
-| ID    | English                                     | Japanese (proposed)                   |
-| ----- | ------------------------------------------- | ------------------------------------- |
-| `q28` | Date night at Tokyo Comedy Bar              | `Tokyo Comedy Barでデートした`        |
-| `q29` | Date took me to a Yurié Collins comedy show | `デートでユリエ コリンズを観に行った` |
+| ID    | English                                  | Japanese                              |
+| ----- | ---------------------------------------- | ------------------------------------- |
+| `q28` | Date night at Tokyo Comedy Bar           | `Tokyo Comedy Barでデートした`        |
+| `q29` | My date took me to Yurié's stand-up show | `デートでユリエ コリンズを観に行った` |
 
-* The IDs assume that `q27` is still the last card in the pool.
-  Use the next free IDs when the cards are added.
+* The cards take the next free IDs after `q27`.
+* The swipe cards show the Lucide `FaceGrinning` icon for `q28` and `Drama` for `q29`.
+  `FaceGrinning` stands for laughing through a comedy night, and it joins the reaction faces on `q01`, `q25`, and `q26`.
+  It is the closest Lucide has to a laughing face: `Laugh` is its old name, and neither Lucide 1.66.0 nor Lucide Lab has another one.
+  The owner chose it over a hand-drawn laughing face.
+  It replaced `Theater`, whose stage curtains read as a stage rather than as comedy or a date at card size.
+  The cards do not use `Mic`, because `Mic` already stands for the results-screen shoutout, and they do not use `Wine`, because it looks too close to the `Martini` on `q08`.
 * Both labels describe something the player did, so they fit the "swipe right if you experienced it" rule.
   A "No" answer works as a nudge to go.
 * The two cards overlap.
@@ -22,19 +29,21 @@ The results-screen shoutout that links to both is already built; see "Results sc
 
 ### Wording notes
 
-* The English label for `q29` adds "a" to the first draft, "Date took me to Yurié Collins comedy show".
+* The owner reworded the English label for `q29` from "Date took me to a Yurié Collins comedy show" to "My date took me to Yurié's stand-up show".
+  It spells "stand-up" with a hyphen, as the results-screen shoutout does, and it uses a typographic apostrophe in `src/data/questions.ts`, as the other labels do.
+  It names her by her first name only, so the full name appears only in the credits, the shoutout, and the share text.
 * The Japanese name `ユリエ コリンズ` matches `creditName` in `src/i18n/locales/ja.ts` and the Japanese share text.
 * The first Japanese draft for `q29`, `デートでユリエ コリンズのコメディショーに連れて行ってもらった`, has 31 characters, which is far too long for a board cell.
-* The proposed label has 18 characters.
+* The chosen label has 18 characters.
   It drops "took me" and keeps the point: the player went to see her on a date.
   `観に行った` already implies a performance, so the label does not need `コメディショー`.
 * An earlier short draft, `デートでユリエ コリンズのショーに行った`, has 20 characters.
-  It names the show, but it is longer than any Japanese label in the pool today.
+  It names the show, but it is longer than any Japanese label from `q01` to `q27`.
 
 
 ### Label length
 
-* The longest Japanese labels in the pool today are `q20` (19 characters, 6 of them Latin letters) and `q10` and `q23` (18 characters each).
+* Before these cards, the longest Japanese labels in the pool were `q20` (19 characters, 6 of them Latin letters) and `q10` and `q23` (18 characters each).
 * On a screen narrower than 420px, a board cell shows at most 3 lines of text (`.cell__text` in `src/components/BingoCell.vue`).
 * `sizeClass` in the same file shrinks the font only for labels longer than 22 characters.
   It counts characters, not width, so a Japanese label of 22 characters or fewer keeps the largest font size and is the most likely to be cut off.
@@ -89,10 +98,10 @@ Show the two cards as a "Bonus squares" row below the board, styled like board s
 +-----------------------------------------+
 | Bonus squares                           |
 |  +------------------+ +---------------+ |
-|  | Date night at    | | Date took me  | |
-|  | Tokyo Comedy Bar | | to a Yurié    | |
-|  |                  | | Collins       | |
-|  |    Yes / No      | | comedy show   | |
+|  | Date night at    | | My date took  | |
+|  | Tokyo Comedy Bar | | me to Yurié's | |
+|  |                  | | stand-up show | |
+|  |    Yes / No      | |               | |
 |  +------------------+ |   Yes / No    | |
 |                       +---------------+ |
 +-----------------------------------------+
@@ -154,10 +163,20 @@ The results-screen shoutout already gives every player the links, so the cards d
 Move to option B if every player must see the cards, or if fewer Bingo wins is a problem.
 Option B is a much larger change: a separate card list, new saved state, a new control in both languages, and a one-time reset of every saved game.
 
-Steps for option A:
 
-1. Settle the English labels, because they become final once they ship.
-2. Pick the Japanese label for `q29`, either the proposed 18-character label or the 20-character draft.
-3. Ask Yurié Collins before the card that names her ships.
-4. Make the changes listed under option A, and run `pnpm check`.
-5. Check both cards in a swipe card, a board cell, and the PNG export on a phone, in both languages.
+## Status
+
+Done:
+
+* The two cards are in the pool with the labels in "The two cards", and `q29` uses the 18-character Japanese label.
+* `src/tests/questions.test.ts` checks the pool size of 29 and both labels in both languages.
+* `src/tests/icons.test.ts` checks the swipe card artwork.
+* The README lists `q25` to `q29` as fan additions in "Credits" and gives the pool size of 29 under "Testing".
+
+Still to do before the cards ship:
+
+1. Confirm the English labels, because they become final once they ship.
+2. Ask Yurié Collins before the card that names her ships.
+3. Check both cards in a swipe card, a board cell, and the PNG export on a phone, in both languages.
+
+Every push to `main` deploys, so do not push these cards until the three checks are done.

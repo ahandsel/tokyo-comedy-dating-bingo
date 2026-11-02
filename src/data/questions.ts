@@ -36,6 +36,8 @@ export const questions: Question[] = [
   { id: 'q25', text: { en: 'Not Japanese enough', ja: '日本人らしさが足りない' } },
   { id: 'q26', text: { en: 'Not foreign enough', ja: '外国人らしさが足りない' } },
   { id: 'q27', text: { en: 'Date ended up being a language lesson', ja: 'デートが語学レッスンになった' } },
+  { id: 'q28', text: { en: 'Date night at Tokyo Comedy Bar', ja: 'Tokyo Comedy Barでデートした' } },
+  { id: 'q29', text: { en: 'My date took me to Yurié’s stand-up show', ja: 'デートでユリエ コリンズを観に行った' } },
 ]
 
 export const QUESTION_COUNT = questions.length

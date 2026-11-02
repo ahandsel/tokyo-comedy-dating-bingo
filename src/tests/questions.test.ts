@@ -3,9 +3,9 @@ import { QUESTION_COUNT, QUESTION_IDS, getQuestionText, isQuestionId, questions 
 import { DECK_SIZE } from '../utils/board'
 
 describe('question dataset', () => {
-  it('has 27 questions, enough to deal a full 24-card board', () => {
-    expect(questions).toHaveLength(27)
-    expect(QUESTION_COUNT).toBe(27)
+  it('has 29 questions, enough to deal a full 24-card board', () => {
+    expect(questions).toHaveLength(29)
+    expect(QUESTION_COUNT).toBe(29)
     expect(DECK_SIZE).toBe(24)
   })
 
@@ -34,6 +34,10 @@ describe('question dataset', () => {
     expect(getQuestionText('q26', 'ja')).toBe('外国人らしさが足りない')
     expect(getQuestionText('q27', 'en')).toBe('Date ended up being a language lesson')
     expect(getQuestionText('q27', 'ja')).toBe('デートが語学レッスンになった')
+    expect(getQuestionText('q28', 'en')).toBe('Date night at Tokyo Comedy Bar')
+    expect(getQuestionText('q28', 'ja')).toBe('Tokyo Comedy Barでデートした')
+    expect(getQuestionText('q29', 'en')).toBe('My date took me to Yurié’s stand-up show')
+    expect(getQuestionText('q29', 'ja')).toBe('デートでユリエ コリンズを観に行った')
   })
 
   it('keeps 告白 and its romaji in the English label of q17 and renders it in Japanese', () => {
