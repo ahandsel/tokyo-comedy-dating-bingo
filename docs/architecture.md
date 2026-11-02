@@ -37,9 +37,9 @@ Undo is the same path in reverse: `GameView.onUndo` calls `game.undo()`, then as
 
 | Layer      | Folder             | Responsibility                                                               |
 | ---------- | ------------------ | ---------------------------------------------------------------------------- |
-| Data       | `src/data/`        | The 24 questions with stable IDs and EN/JA text.                             |
+| Data       | `src/data/`        | The question pool with stable IDs and EN/JA text.                            |
 | Types      | `src/types/`       | `GameState`, `Answer`, `BoardCellId`, `BingoResult`, and the message schema. |
-| Pure logic | `src/utils/`       | Shuffle, board generation, winning-line evaluation, canvas export.           |
+| Pure logic | `src/utils/`       | Shuffle, dealing, board generation, winning-line evaluation, canvas export.  |
 | Store      | `src/composables/` | The reactive game store, LocalStorage persistence, and locale helpers.       |
 | i18n       | `src/i18n/`        | Vue I18n setup, locale detection, and the EN and JA catalogues.              |
 | Components | `src/components/`  | Reusable pieces: swipe card and deck, controls, board, cells, dialogs.       |
@@ -87,11 +87,16 @@ src/
     ConfirmDialog.vue          confirmation before discarding a game
     ModalDialog.vue            accessible <dialog> wrapper
     LanguageSwitcher.vue       English | 日本語
+    CreditLink.vue             new-tab link to Yurié Collins or Tokyo Comedy Bar, used in the credits and the shoutout
+  views/
+    WelcomeView.vue            rules, start or resume, start-over confirmation, storage notices, credits
+    GameView.vue               the swipe screen and the page-wide keyboard controls
+    ResultsView.vue            board reveal, answer editing, export and share, restart, the shoutout
   composables/
     useGame.ts                 the store and all game rules
     useGameStorage.ts          LocalStorage wrapper with strict validation
     useLocale.ts               locale switching, preference saving, <html lang> and title
-  data/questions.ts            the 24 bilingual questions
+  data/questions.ts            the bilingual question pool
   i18n/                        createI18n, detection, preference storage, locales/en.ts, locales/ja.ts
   types/                       game.ts and i18n.ts
   utils/                       shuffle.ts, board.ts, bingo.ts, exportImage.ts

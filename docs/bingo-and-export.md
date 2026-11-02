@@ -6,13 +6,16 @@ It knows nothing about Vue or about the current language.
 
 ## Board generation (`utils/board.ts`)
 
-* `BOARD_SIZE` is 5, `CELL_COUNT` is 25, and `CENTER_INDEX` is 12 (row 2, column 2, zero-based).
-* `generateBoard(questionIds, random)` shuffles the 24 IDs with Fisher-Yates and places them around the `free` marker at index 12.
+* `BOARD_SIZE` is 5, `CELL_COUNT` is 25, `CENTER_INDEX` is 12 (row 2, column 2, zero-based), and `DECK_SIZE` is 24.
+* `drawDeck(pool, random)` deals the cards for one game: 24 different IDs drawn at random from the question pool, already in swipe order.
+  It throws if the pool holds fewer than 24 unique IDs.
+* `generateBoard(questionIds, random)` shuffles the 24 dealt IDs with Fisher-Yates and places them around the `free` marker at index 12.
   It throws if it does not receive exactly 24 unique IDs.
 * `isValidBoard(value)` is the structural check used when loading a saved game.
 * `indexToRowCol` and `rowColToIndex` convert between flat indices and coordinates.
 
 The board is generated once, right after the 24th answer, with a shuffle that is independent of the swipe order and of the answers.
+The game store puts the dealt IDs back in pool order before it calls `generateBoard`, so the swipe order cannot leak into the board.
 It is stored as IDs in `GameState.boardQuestionIds` and never regenerated: editing an answer or switching language keeps every square where it is.
 
 
@@ -46,6 +49,11 @@ Arrow keys, Home, and End move focus between cells.
 Tapping a cell opens `CellDetailModal`, which shows the full text and offers "Change to Yes" or "Change to No".
 The dialog opens with focus on "Close", so when the Enter press that opened it repeats, it closes the dialog instead of changing the answer.
 
+After the reveal, a shoutout card below the status line points players to Yurié Collins's live shows and to Tokyo Comedy Bar.
+It renders `results.shoutout` with `I18nT`, and the `{name}` and `{venue}` slots each hold a `CreditLink`.
+The card sits below the status line so that export and share messages stay next to the buttons.
+It is not part of the PNG export.
+
 
 ## Image export (`utils/exportImage.ts`)
 
@@ -71,6 +79,6 @@ The Share button is only rendered when `canShareFiles()` is true.
 
 ## Tests
 
-* `src/tests/board.test.ts` - shuffle, structure, independence from answers and order, stability across reloads and edits.
+* `src/tests/board.test.ts` - shuffle, dealing, structure, independence from answers and order, stability across reloads and edits.
 * `src/tests/bingo.test.ts` - every line type, the free centre, all NO, all YES, overlapping wins, four in a row.
 * `src/tests/export.test.ts` - tokenizing, wrapping, drawing all 25 cells in both languages, the icon marks and their match with `@lucide/vue`, the share fallback.

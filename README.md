@@ -15,14 +15,18 @@ Fully bilingual (English and Japanese), fully client-side, and deployable to Git
 ## Credits
 
 Tokyo Comedy Dating Bingo is a fan-made game inspired by the comedy of [Yurié Collins (ユリエ コリンズ)](https://linktr.ee/babypinkhaus).
-The Bingo idea and the 24 questions come from her show Tokyo Hoe Tales at [Tokyo Comedy Bar](https://www.tokyocomedybar.com/).
+The Bingo idea and the original 24 questions come from her show Tokyo Hoe Tales at Tokyo Comedy Bar.
 
 * This is an unofficial fan project.
-  It is not affiliated with Tokyo Comedy Bar.
+  It is not affiliated with [Tokyo Comedy Bar](https://www.tokyocomedybar.com/).
 * The MIT License in `LICENSE` covers the code only.
-  The Bingo idea and the question content in `src/data/questions.ts` belong to Yurié Collins, so do not reuse them without her permission.
+  The Bingo idea and the original 24 questions (`q01` to `q24` in `src/data/questions.ts`) belong to Yurié Collins, so do not reuse them without her permission.
+* Questions `q25` to `q27` are fan additions written for this game.
+  They do not come from her show.
 * The welcome screen and the share text credit her in both English and Japanese.
   Keep these credits when you change the copy.
+* The results screen gives her live shows and the stand-up shows at Tokyo Comedy Bar in Shibuya a shoutout, in both languages.
+  Both names link out through `CreditLink.vue`, which holds the two URLs.
 
 
 ## Contents
@@ -55,13 +59,14 @@ The Bingo idea and the 24 questions come from her show Tokyo Hoe Tales at [Tokyo
 ## Game rules
 
 1. Press "Start swiping".
-   The 24 question IDs are shuffled once with Fisher-Yates and the order is saved.
+   24 question IDs are drawn at random from the question pool, shuffled once with Fisher-Yates, and the order is saved.
+   The pool holds more than 24 questions, so each game leaves a few cards out.
 2. Each card shows one dating experience.
    Swipe right (or flick right, press the Yes button, or press the right arrow key) if you have experienced it.
    Swipe left (No button, left arrow key) if you have not.
 3. "Undo" (or the down arrow key, Backspace, or Ctrl/Cmd+Z) reopens the previous card and removes its answer.
    The keys work anywhere on the swipe screen; nothing needs focus first.
-4. After the 24th answer, a 5x5 board is generated: the 24 questions are shuffled again, independently of your answers and of the swipe order, and placed around a free centre square (row 2, column 2, flat index 12, zero-based).
+4. After the 24th answer, a 5x5 board is generated: the same 24 questions are shuffled again, independently of your answers and of the swipe order, and placed around a free centre square (row 2, column 2, flat index 12, zero-based).
 5. A square is marked when its answer is YES or it is the free centre.
    Any complete row, column, or diagonal (12 possible lines) is a Bingo.
    Multiple lines are counted and overlapping cells are deduplicated.
@@ -82,7 +87,7 @@ Both languages ship in the first release and are equally complete.
   `English | 日本語` appears on the welcome, swipe, and results screens.
   Switching updates the interface, the current card, buttons, progress text, board labels, results, statistics, dialogs, status announcements, and export text immediately.
 * **Switching never restarts the game.**
-  Answers are keyed by stable question IDs (`q01` to `q24`), never by translated text.
+  Answers are keyed by stable question IDs (`q01`, `q02`, and so on), never by translated text.
   The question order and the final board arrangement are stored as ID lists, so switching language only changes what is displayed.
 * **Detection on first visit.**
   A saved preference in LocalStorage wins.
@@ -107,17 +112,17 @@ Game state is saved automatically on every change to LocalStorage under `tcdb:ga
 
 ```ts
 interface GameState {
-  version: number
-  phase: 'welcome' | 'playing' | 'results'
-  questionOrder: string[]
-  currentQuestionIndex: number
-  answers: Record<string, 'yes' | 'no'>
-  answerHistory: string[]
-  boardQuestionIds: (string | 'free')[] | null
+  version: number;
+  phase: 'welcome' | 'playing' | 'results';
+  questionOrder: string[];
+  currentQuestionIndex: number;
+  answers: Record<string, 'yes' | 'no'>;
+  answerHistory: string[];
+  boardQuestionIds: (string | 'free')[] | null;
 }
 ```
 
-Loading validates the shape strictly (version, phase, a full permutation of question IDs, valid answers, consistent undo history, a valid 25-cell board with the free centre, and phase-specific consistency such as "a board requires all 24 answers").
+Loading validates the shape strictly (version, phase, 24 unique question IDs from the pool, valid answers, consistent undo history, a valid 25-cell board with the free centre that holds exactly the dealt cards, and phase-specific consistency such as "a board requires all 24 answers").
 Anything else is discarded, a fresh game begins, and the welcome screen says so.
 If LocalStorage is unavailable the game still runs in memory and the welcome screen warns that progress will not survive a refresh.
 
@@ -132,21 +137,21 @@ Sharing happens only when you press "Share" or "Save image", and the image is ge
 
 ## Technology stack
 
-| Area | Choice |
-| --- | --- |
-| Framework | Vue 3.5 (Composition API, `<script setup>`) |
-| Language | TypeScript 6 (strict, via `@vue/tsconfig`) |
-| Build | Vite 8 |
-| i18n | Vue I18n 11 (`legacy: false`, English fallback) |
-| State | Vue composables (`useGame`, `useGameStorage`, `useLocale`); Pinia was not needed for a single store |
-| Styling | Plain CSS with custom properties |
-| Icons | Lucide (`@lucide/vue`), imported one icon at a time |
-| Swiping | Custom Pointer Events implementation in `SwipeCard.vue` |
-| Bingo engine | Custom pure TypeScript (`utils/board.ts`, `utils/bingo.ts`) |
-| Export | Native Canvas 2D API, Web Share API with download fallback |
-| Celebration | `canvas-confetti` (lazy-loaded) |
-| Tests | Vitest 5 with jsdom and Vue Test Utils |
-| CI/CD | GitHub Actions with `pnpm/action-setup`, GitHub Pages |
+| Area         | Choice                                                                                              |
+| ------------ | --------------------------------------------------------------------------------------------------- |
+| Framework    | Vue 3.5 (Composition API, `<script setup>`)                                                         |
+| Language     | TypeScript 6 (strict, via `@vue/tsconfig`)                                                          |
+| Build        | Vite 8                                                                                              |
+| i18n         | Vue I18n 11 (`legacy: false`, English fallback)                                                     |
+| State        | Vue composables (`useGame`, `useGameStorage`, `useLocale`); Pinia was not needed for a single store |
+| Styling      | Plain CSS with custom properties                                                                    |
+| Icons        | Lucide (`@lucide/vue`), imported one icon at a time                                                 |
+| Swiping      | Custom Pointer Events implementation in `SwipeCard.vue`                                             |
+| Bingo engine | Custom pure TypeScript (`utils/board.ts`, `utils/bingo.ts`)                                         |
+| Export       | Native Canvas 2D API, Web Share API with download fallback                                          |
+| Celebration  | `canvas-confetti` (lazy-loaded)                                                                     |
+| Tests        | Vitest 5 with jsdom and Vue Test Utils                                                              |
+| CI/CD        | GitHub Actions with `pnpm/action-setup`, GitHub Pages                                               |
 
 
 ## Open-source research findings
@@ -156,12 +161,12 @@ Candidates were reviewed for Vue 3 compatibility, TypeScript support, gesture su
 
 ### Swiping
 
-| Project | License | Findings | Decision |
-| --- | --- | --- | --- |
-| [vue3-flashcards](https://github.com/vad1ym/vue3-flashcards) | MIT | Vue 3, typed, touch and mouse, left/right events, undo ("restore"), zero dependencies. No keyboard or accessibility support documented. Small community (15 stars). | Rejected. Closest fit, but adding a dependency to save roughly 150 lines of pointer code was not worth losing control over keyboard handling, ARIA labels, reduced-motion behaviour, and the leaving-card animation that keeps undo coherent. |
-| [tallman-swiper](https://github.com/tallmancode/tallman-swiper) | MIT | Vue 3 and TypeScript with keyboard and ARIA support, but it is a full application (Express server, Sentry, Pexels API key), not a reusable package. | Rejected: not consumable as a component. |
-| [vue-tinder](https://github.com/shanlh/vue-tinder) | MIT | Vue 2 only, no TypeScript. | Rejected: incompatible with Vue 3. |
-| [VueUse](https://vueuse.org/) `usePointerSwipe` | MIT | Vue 3, typed, mouse/touch/pen, direction and threshold detection, 1.3 kB. No rotation, overlays, or undo (those are UI concerns anyway). | Not adopted. It would only replace the pointer bookkeeping; the card transform, stamps, and threshold logic still had to be written. A custom implementation keeps the app dependency-free here. |
+| Project                                                         | License | Findings                                                                                                                                                            | Decision                                                                                                                                                                                                                                      |
+| --------------------------------------------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [vue3-flashcards](https://github.com/vad1ym/vue3-flashcards)    | MIT     | Vue 3, typed, touch and mouse, left/right events, undo ("restore"), zero dependencies. No keyboard or accessibility support documented. Small community (15 stars). | Rejected. Closest fit, but adding a dependency to save roughly 150 lines of pointer code was not worth losing control over keyboard handling, ARIA labels, reduced-motion behaviour, and the leaving-card animation that keeps undo coherent. |
+| [tallman-swiper](https://github.com/tallmancode/tallman-swiper) | MIT     | Vue 3 and TypeScript with keyboard and ARIA support, but it is a full application (Express server, Sentry, Pexels API key), not a reusable package.                 | Rejected: not consumable as a component.                                                                                                                                                                                                      |
+| [vue-tinder](https://github.com/shanlh/vue-tinder)              | MIT     | Vue 2 only, no TypeScript.                                                                                                                                          | Rejected: incompatible with Vue 3.                                                                                                                                                                                                            |
+| [VueUse](https://vueuse.org/) `usePointerSwipe`                 | MIT     | Vue 3, typed, mouse/touch/pen, direction and threshold detection, 1.3 kB. No rotation, overlays, or undo (those are UI concerns anyway).                            | Not adopted. It would only replace the pointer bookkeeping; the card transform, stamps, and threshold logic still had to be written. A custom implementation keeps the app dependency-free here.                                              |
 
 Implemented: `SwipeCard.vue` uses Pointer Events with pointer capture and `touch-action: none`, a threshold of `min(120px, 35% of card width)`, a flick rule (40px at 0.5px/ms) for quick thumb swipes, rotation proportional to drag distance, YES/NO stamps whose opacity follows progress, snap-back below the threshold, and a leaving-card exit transition that starts from wherever the finger let go.
 `SwipeDeck.vue` stacks the next two cards, keeps leaving cards under their original keys so the exit animates, and ignores repeated events for a card that is already leaving.
@@ -171,11 +176,11 @@ See [docs/swiping.md](docs/swiping.md).
 
 ### Bingo
 
-| Project | License | Findings | Decision |
-| --- | --- | --- | --- |
-| [mengxiaozhi/Bingo](https://github.com/mengxiaozhi/Bingo) | MIT | Vue 3 + Vite generator app (Naive UI, Tailwind), JavaScript only, no exported engine. | Rejected: an app, not a library, and untyped. |
-| [bingo-ts](https://github.com/ya-s-u/bingo-ts) | MIT | Clean TypeScript, 5x5 board with free centre, row/column/diagonal judging. Cells are numbers 1 to 75 in B-I-N-G-O ranges; no custom text labels. | Rejected: number-based model would need adapting and gives no advantage over a 60-line custom engine. |
-| [lucasnetau/bingo](https://github.com/lucasnetau/bingo) | MIT | Plain HTML 75-ball bingo with manual win claiming. | Rejected: no engine to reuse. |
+| Project                                                   | License | Findings                                                                                                                                         | Decision                                                                                              |
+| --------------------------------------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------- |
+| [mengxiaozhi/Bingo](https://github.com/mengxiaozhi/Bingo) | MIT     | Vue 3 + Vite generator app (Naive UI, Tailwind), JavaScript only, no exported engine.                                                            | Rejected: an app, not a library, and untyped.                                                         |
+| [bingo-ts](https://github.com/ya-s-u/bingo-ts)            | MIT     | Clean TypeScript, 5x5 board with free centre, row/column/diagonal judging. Cells are numbers 1 to 75 in B-I-N-G-O ranges; no custom text labels. | Rejected: number-based model would need adapting and gives no advantage over a 60-line custom engine. |
+| [lucasnetau/bingo](https://github.com/lucasnetau/bingo)   | MIT     | Plain HTML 75-ball bingo with manual win claiming.                                                                                               | Rejected: no engine to reuse.                                                                         |
 
 Implemented: `utils/board.ts` (Fisher-Yates arrangement with FREE at index 12, validation) and `utils/bingo.ts` (12 precomputed lines, marked-cell evaluation returning `BingoResult` with deduplicated winning cell indices).
 The engine never sees translated text.
@@ -191,12 +196,12 @@ The engine never sees translated text.
 
 Runtime:
 
-| Package | License | Purpose |
-| --- | --- | --- |
-| `vue` | MIT | UI framework |
-| `vue-i18n` | MIT | Localization |
-| `canvas-confetti` | ISC | Confetti on Bingo (lazy-loaded, decorative only) |
-| `@lucide/vue` | ISC | Interface icons, bundled at build time, so they add no network request |
+| Package           | License | Purpose                                                                |
+| ----------------- | ------- | ---------------------------------------------------------------------- |
+| `vue`             | MIT     | UI framework                                                           |
+| `vue-i18n`        | MIT     | Localization                                                           |
+| `canvas-confetti` | ISC     | Confetti on Bingo (lazy-loaded, decorative only)                       |
+| `@lucide/vue`     | ISC     | Interface icons, bundled at build time, so they add no network request |
 
 Development: `vite`, `@vitejs/plugin-vue`, `vue-tsc`, `typescript` (Apache-2.0), `@vue/tsconfig`, `vitest`, `@vue/test-utils`, `jsdom`, `@types/node`, `@types/canvas-confetti` (all MIT unless noted).
 
@@ -217,14 +222,14 @@ Requirements:
 
 ```sh
 pnpm install
-pnpm dev        # start the dev server
-pnpm test       # run the Vitest suite once
-pnpm typecheck  # vue-tsc project build (no emit)
-pnpm build      # production build into dist/
-pnpm preview    # serve the production build locally
-pnpm lint       # format with Prettier, then fix Markdown with markdownlint-cli2
-pnpm check      # lint, test, then build; run it before every commit
-pnpm index      # list every pnpm script defined in package.json
+pnpm dev       # start the dev server
+pnpm test      # run the Vitest suite once
+pnpm typecheck # vue-tsc project build (no emit)
+pnpm build     # production build into dist/
+pnpm preview   # serve the production build locally
+pnpm lint      # format with Prettier, then fix Markdown with markdownlint-cli2
+pnpm check     # lint, test, then build; run it before every commit
+pnpm index     # list every pnpm script defined in package.json
 ```
 
 `pnpm test:watch` runs Vitest in watch mode.
@@ -236,17 +241,17 @@ Formatting rules live in `.prettierrc.json5` and `.markdownlint-cli2.jsonc`, imp
 
 ## Testing
 
-`pnpm test` runs 109 tests across ten files in `src/tests/`:
+`pnpm test` runs 117 tests across ten files in `src/tests/`:
 
-* `questions.test.ts`: 24 questions, unique IDs, both translations present, corrected labels, 告白 rendering.
-* `i18n.test.ts`: browser-language detection, saved preference precedence, corrupted preferences, key parity between `en` and `ja`, English fallback, progress formatting, the switcher, full-app language switching on the welcome, swipe, and results screens (IDs, answers, order, and board preserved; preference preserved across restart and reload), and the credits on the welcome screen and in the share text.
-* `swipe.test.ts`: pointer gestures (left, right, snap-back, visual feedback, non-interactive cards), store answers, undo, re-answering, 24-answer completion, button/keyboard/gesture equivalence, double-event protection, the preserved card element during the exit animation, undo while a card is leaving, a new answer right after an undo, and the flick rules.
+* `questions.test.ts`: the 27-question pool, unique IDs, both translations present, corrected labels, the fan-made cards in both languages, 告白 rendering.
+* `i18n.test.ts`: browser-language detection, saved preference precedence, corrupted preferences, key parity between `en` and `ja`, English fallback, progress formatting, the switcher, full-app language switching on the welcome, swipe, and results screens (IDs, answers, order, and board preserved; preference preserved across restart and reload), the credits on the welcome screen and in the share text, and the shoutout on the results screen.
+* `swipe.test.ts`: pointer gestures (left, right, snap-back, visual feedback, non-interactive cards), store answers, dealing 24 different cards, undo, re-answering, 24-answer completion, button/keyboard/gesture equivalence, double-event protection, the preserved card element during the exit animation, undo while a card is leaving, a new answer right after an undo, and the flick rules.
 * `keyboard.test.ts`: page-wide arrow keys and undo shortcuts, key repeat, modifier keys, listener cleanup, and arrow-key navigation inside the Bingo grid.
 * `dialogs.test.ts`: the native dialog wrapper, the initial focus on "Cancel" and "Close", the start-over confirmation on the welcome screen, and the corrupted-data notice.
-* `icons.test.ts`: Lucide icons stay hidden from screen readers and add no text to button labels on every screen and in the cell dialog, each board square shows the check, cross, or heart icon that matches its state, each status message and the restart confirmation show their icon, and each link that opens a new tab shows the external-link icon.
-* `board.test.ts`: shuffle, 25 cells, FREE centre, all 24 questions once, validation, independence from answers and swipe order, stable order across reload and edits.
+* `icons.test.ts`: Lucide icons stay hidden from screen readers and add no text to button labels on every screen and in the cell dialog, each board square shows the check, cross, or heart icon that matches its state, each status message and the restart confirmation show their icon, each link that opens a new tab shows the external-link icon, and only the Hachiko swipe card shows the dog icon above its text.
+* `board.test.ts`: shuffle, dealing 24 cards from the pool, 25 cells, FREE centre, all 24 dealt questions once, a board built from exactly the dealt cards, validation, independence from answers and swipe order, stable order across reload and edits.
 * `bingo.test.ts`: 12 lines, horizontal, vertical, both diagonals, free centre, all NO, all YES (12 lines), multiple wins with deduplication, four-in-a-row is not Bingo, language independence.
-* `storage.test.ts`: strict parsing, phase-consistency rules, auto-save and reload of answers, order, index, and board, restart, corrupted storage, missing storage, answer editing without reshuffle, pause and resume, and the one-time reveal flag.
+* `storage.test.ts`: strict parsing, phase-consistency rules, boards that must hold the dealt cards, saves from before the pool grew, auto-save and reload of answers, order, index, and board, restart, corrupted storage, missing storage, answer editing without reshuffle, pause and resume, and the one-time reveal flag.
 * `export.test.ts`: tokenizing and wrapping for English and Japanese, canvas drawing with all 25 cells in each language, the board and stat marks drawn as Lucide icon shapes that match the shapes `@lucide/vue` renders, Web Share fallback.
 
 Build and deployment checks (`pnpm typecheck`, `pnpm build`, `pnpm install --frozen-lockfile`) run in CI before every deployment.
@@ -264,8 +269,8 @@ pnpm preview
 The same base is used by `pnpm dev` and `pnpm preview`, so the local URL mirrors production (for example `http://localhost:5173/tokyo-comedy-dating-bingo/`).
 
 ```sh
-BASE_PATH=/my-fork-name/ pnpm build   # project site with a different repository name
-BASE_PATH=/ pnpm build                # root site or custom domain
+BASE_PATH=/my-fork-name/ pnpm build # project site with a different repository name
+BASE_PATH=/ pnpm build              # root site or custom domain
 ```
 
 The app is a single page with no router, so refreshing on GitHub Pages never produces a 404.
@@ -320,15 +325,16 @@ tokyo-comedy-dating-bingo/
       CellDetailModal.vue        tap-to-inspect and edit an answer
       ConfirmDialog.vue          restart confirmation
       ModalDialog.vue            accessible <dialog> wrapper
+      CreditLink.vue             new-tab link to Yurié Collins or Tokyo Comedy Bar
     views/
       WelcomeView.vue            start, resume, start-over confirmation, storage notices, credits
       GameView.vue               swipe screen and page-wide keyboard controls
-      ResultsView.vue            board, reveal, edit, export, share, restart
+      ResultsView.vue            board, reveal, edit, export, share, restart, shoutout
     composables/
       useGame.ts                 reactive game store and rules
       useGameStorage.ts          LocalStorage persistence and strict validation
       useLocale.ts               locale switching, persistence, <html lang>, title
-    data/questions.ts            the 24 bilingual questions
+    data/questions.ts            the bilingual question pool
     i18n/
       index.ts                   createI18n, detection, preference storage
       locales/en.ts              interface messages (schema source)
@@ -336,7 +342,7 @@ tokyo-comedy-dating-bingo/
     types/game.ts, types/i18n.ts
     utils/
       shuffle.ts                 Fisher-Yates and a seeded PRNG for tests
-      board.ts                   board generation and validation
+      board.ts                   card dealing, board generation, and validation
       bingo.ts                   winning-line evaluation
       exportImage.ts             canvas PNG rendering, share, download
     tests/                       Vitest suites and helpers
@@ -354,16 +360,20 @@ Edit `src/data/questions.ts`.
 Each entry needs a stable `id` and `text` for every locale:
 
 ```ts
-{ id: 'q25', text: { en: 'New experience', ja: '新しい経験' } }
+{ id: 'q28', text: { en: 'New experience', ja: '新しい経験' } }
 ```
 
 Rules enforced by tests and by the board generator:
 
-* Exactly 24 questions (a 5x5 board with a free centre).
-  Changing the count requires changing `BOARD_SIZE` logic and is not supported as-is.
+* At least 24 questions.
+  Each game deals 24 of them at random, one for every square of the 5x5 board except the free centre.
+  Changing the board size requires changing `BOARD_SIZE` logic and is not supported as-is.
+* `questions.test.ts` pins the size of the pool, so update it when you add or remove a question.
 * IDs must be unique.
   Keep existing IDs stable: saved games reference them, and changing an ID invalidates saved progress (the loader will safely start a new game).
 * Every locale must have non-empty text.
+
+Add a question that does not come from Tokyo Hoe Tales below the fan additions comment, and update [Credits](#credits) to match.
 
 
 ## Editing translations
@@ -391,7 +401,11 @@ Missing keys fall back to English at runtime.
 Colours, fonts, radii, and shadows are CSS custom properties at the top of `src/style.css`:
 
 ```css
---blush: #fce4ec;  --rose: #e97ca6;  --berry: #a83f70;  --cream: #fff8f4;  --ink: #261a21;
+--blush: #fce4ec;
+--rose: #e97ca6;
+--berry: #a83f70;
+--cream: #fff8f4;
+--ink: #261a21;
 ```
 
 The exported PNG uses matching constants in `src/utils/exportImage.ts` (`COLORS`) and the same font stacks (`EXPORT_FONT_STACK`, `EXPORT_SCRIPT_STACK`).
@@ -404,7 +418,11 @@ Import each icon by name, such as `import { Heart } from '@lucide/vue'`, so the 
 The `.lucide` rule in `src/style.css` sizes every icon to the text around it, and icons take the text color.
 That rule overrides the `size` and `stroke-width` props, so set a larger icon or a heavier stroke with a component class in CSS.
 Mark each icon `aria-hidden="true"` and keep a visible text label or an `aria-label` on the control, so the icon never carries meaning by itself.
-Use the same icon for the same meaning everywhere: `Check` and `X` for Yes and No squares, `Heart` for the Yes button and the free square, `Star` for winning lines, and `Undo2`, `RotateCcw`, `Download`, and `Share` for their actions.
+Use the same icon for the same meaning everywhere: `Check` and `X` for Yes and No squares, `Heart` for the Yes button and the free square, `Star` for winning lines, `Mic` for the comedy shoutout, `ExternalLink` for links that open a new tab, and `Undo2`, `RotateCcw`, `Download`, and `Share` for their actions.
+Most swipe cards show artwork above their text, such as `Dog` for the Hachiko statue on the `q19` card.
+`CARD_ICONS` in `src/components/SwipeCard.vue` maps each question ID to its card artwork.
+The `q21`, `q25`, and `q26` cards have no artwork on purpose.
+Card artwork must not reuse an icon that already has a meaning in this section.
 Status messages use `LoaderCircle` while the image is being made, `CircleCheck` for success, `Pencil` for a changed answer, and `TriangleAlert` for errors, warnings, and confirmations.
 A link that opens a new tab ends with `ExternalLink`.
 The decorative heart motifs, the result emoji, and the emoji in the welcome notices stay as emoji.
@@ -426,4 +444,4 @@ The [docs/](docs/README.md) folder explains each layer: [architecture](docs/arch
 * The Web Share API with files is only available on some browsers (notably mobile Safari and Chrome on Android).
   Elsewhere the Share button is hidden and "Save image" is used.
 * Native `<dialog>` is required for the modal backdrop and focus trapping; very old browsers show the dialog inline.
-* The board is fixed at 5x5 with 24 questions.
+* The board is fixed at 5x5, so each game shows 24 of the questions in the pool.

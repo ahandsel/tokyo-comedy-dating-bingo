@@ -43,18 +43,18 @@ Do not commit `package-lock.json` or `yarn.lock`.
 
 The suite lives in `src/tests/` and runs in jsdom with Vue Test Utils.
 
-| File             | Covers                                                                                      |
-| ---------------- | ------------------------------------------------------------------------------------------- |
-| `questions.test` | 24 questions, unique IDs, both translations, specific labels.                               |
-| `i18n.test`      | Detection, preferences, catalogue parity, switching on every screen, persistence, credits.  |
-| `swipe.test`     | Gestures, store rules, double-event guard, exit and return animations, flicks.              |
-| `keyboard.test`  | Page-wide arrow keys and undo shortcuts, key repeat, modifiers, cleanup, grid navigation.   |
-| `dialogs.test`   | The native dialog wrapper, initial focus, start-over confirmation, corrupted-data notice.   |
-| `icons.test`     | Hidden icons, board marks by state, status and dialog icons, new-tab link icons.            |
-| `board.test`     | Shuffle, board structure, independence, stability.                                          |
-| `bingo.test`     | Winning-line evaluation.                                                                    |
-| `storage.test`   | Validation, auto-save, reload, restart, corruption, missing storage, reveal flag.           |
-| `export.test`    | Wrapping, drawing in both languages, icon marks matching Lucide, share fallback.            |
+| File             | Covers                                                                                               |
+| ---------------- | ---------------------------------------------------------------------------------------------------- |
+| `questions.test` | Pool size, unique IDs, both translations, specific labels, fan-made cards.                           |
+| `i18n.test`      | Detection, preferences, catalogue parity, switching on every screen, persistence, credits, shoutout. |
+| `swipe.test`     | Gestures, store rules, double-event guard, exit and return animations, flicks.                       |
+| `keyboard.test`  | Page-wide arrow keys and undo shortcuts, key repeat, modifiers, cleanup, grid navigation.            |
+| `dialogs.test`   | The native dialog wrapper, initial focus, start-over confirmation, corrupted-data notice.            |
+| `icons.test`     | Hidden icons, board marks by state, status and dialog icons, new-tab link icons.                     |
+| `board.test`     | Shuffle, dealing, board structure, independence, stability.                                          |
+| `bingo.test`     | Winning-line evaluation.                                                                             |
+| `storage.test`   | Validation, old saves, auto-save, reload, restart, corruption, missing storage, reveal flag.         |
+| `export.test`    | Wrapping, drawing in both languages, icon marks matching Lucide, share fallback.                     |
 
 Helpers in `helpers.ts`:
 

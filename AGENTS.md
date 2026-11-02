@@ -25,13 +25,13 @@ The repository itself is private, but the deployed site is public.
 
 * `src/` - The app.
   * `App.vue` and `main.ts` - The root component, which switches views by game phase, and the entry point, which boots Vue I18n with the saved or detected locale.
-  * `components/` - Vue components for the swipe deck, the Bingo board, the dialogs, and the language switcher.
+  * `components/` - Vue components for the swipe deck, the Bingo board, the dialogs, the language switcher, and the credit links.
   * `views/` - One view per game phase: `WelcomeView.vue`, `GameView.vue`, and `ResultsView.vue`.
   * `composables/` - Reactive state: `useGame.ts` (game store and rules), `useGameStorage.ts` (LocalStorage persistence and validation), and `useLocale.ts` (language switching, `<html lang>`, and the document title).
-  * `data/questions.ts` - The 24 bilingual questions.
+  * `data/questions.ts` - The bilingual question pool.
   * `i18n/` - Vue I18n setup in `index.ts` and the interface message catalogs in `locales/en.ts` and `locales/ja.ts`.
   * `types/` - Shared types, including `GameState`, `Locale`, and the `FREE` board marker.
-  * `utils/` - Pure TypeScript logic: shuffling, board generation, Bingo evaluation, and PNG export.
+  * `utils/` - Pure TypeScript logic: shuffling, dealing each game's cards, board generation, Bingo evaluation, and PNG export.
   * `tests/` - Vitest suites plus the shared `setup.ts` and `helpers.ts`.
   * `style.css` - Theme tokens, typography, and shared button styles.
 * `public/` - Static files that Vite copies into `dist/` unchanged.
@@ -39,7 +39,7 @@ The repository itself is private, but the deployed site is public.
 * `.github/workflows/` - The deployment workflow.
   See "Continuous integration".
 * `.claude/` - Claude Code configuration: `settings.json` (permissions, attribution, and the lint hook), the `CLAUDE.md` stub that imports this file, and the `commands` and `skills` symlinks described below.
-* `docs/` - One page per layer of the code, plus the Markdown and commit style guides, indexed by [docs/README.md](docs/README.md).
+* `docs/` - One page per layer of the code, plus the Markdown and commit style guides and notes on ideas that are not built yet, indexed by [docs/README.md](docs/README.md).
 * `memory/` - Durable cross-session notes for AI agents, indexed by [memory/MEMORY.md](memory/MEMORY.md).
 * `prompts/` - Reusable `*.prompt.md` files, indexed by [prompts/README.md](prompts/README.md).
   `.claude/commands` is a symlink to this folder, so each prompt is also a Claude Code slash command.
@@ -110,8 +110,9 @@ Do not change one without the owner's explicit approval.
   Sharing happens only when the player presses "Share" or "Save image", and the image is generated locally.
 * There is one page and no router.
   Do not add routes such as `/en/` and `/ja/`; the same page serves both languages, and a reload on GitHub Pages never returns a 404.
-* There are exactly 24 questions, and the board is always a true 5x5 grid with the `FREE` cell at `CENTER_INDEX` (flat index 12).
-* Question IDs (`q01` to `q24`) are stable.
+* Each game deals exactly 24 questions (`DECK_SIZE`) at random from the pool in `src/data/questions.ts`, and the board is always a true 5x5 grid with the `FREE` cell at `CENTER_INDEX` (flat index 12).
+  The board holds exactly the dealt questions.
+* Question IDs (`q01`, `q02`, and so on) are stable.
   Answers, the swipe order, and the board arrangement are all stored as IDs, so changing an ID invalidates saved games.
 * The English question labels in `src/data/questions.ts` are final.
   Do not reword them.
@@ -357,7 +358,7 @@ Example:
 The export runs every night.
 It includes every file in the folder.
 
-* Turn on the setting.
+- Turn on the setting.
   The change applies to every user.
 ```
 
