@@ -53,6 +53,54 @@ describe('SwipeCard gestures', () => {
   })
 })
 
+describe('SwipeCard text selection', () => {
+  const props = { questionId: 'q01', text: 'Test', number: 1, total: 24, interactive: true }
+
+  /** Dispatches a cancelable event on the card and reports whether the card cancelled it. */
+  function isPrevented(el: Element, event: Event): boolean {
+    el.dispatchEvent(event)
+    return event.defaultPrevented
+  }
+
+  const selectStart = () => new Event('selectstart', { bubbles: true, cancelable: true })
+
+  it('blocks text selection only while a mouse drags the card', async () => {
+    const { wrapper } = mountWithI18n(SwipeCard, 'en', props)
+    const card = wrapper.find('[data-testid="swipe-card"]').element
+    expect(isPrevented(card, selectStart())).toBe(false)
+    await firePointer(card, 'pointerdown', { pointerId: 1, pointerType: 'mouse', clientX: 100, clientY: 100 })
+    expect(isPrevented(card, selectStart())).toBe(true)
+    await firePointer(card, 'pointerup', { pointerId: 1, pointerType: 'mouse', clientX: 100, clientY: 100 })
+    expect(isPrevented(card, selectStart())).toBe(false)
+  })
+
+  it('lets a double click select text without moving the card', async () => {
+    const { wrapper } = mountWithI18n(SwipeCard, 'en', props)
+    const card = wrapper.find('[data-testid="swipe-card"]')
+    Object.defineProperty(card.element, 'offsetWidth', { value: 320, configurable: true })
+    await firePointer(card.element, 'pointerdown', { pointerId: 1, pointerType: 'mouse', clientX: 100, clientY: 100 })
+    card.element.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true, detail: 2 }))
+    expect(isPrevented(card.element, selectStart())).toBe(false)
+    await firePointer(card.element, 'pointermove', { pointerId: 1, pointerType: 'mouse', clientX: 300, clientY: 100 })
+    await firePointer(card.element, 'pointerup', { pointerId: 1, pointerType: 'mouse', clientX: 300, clientY: 100 })
+    expect((card.element as HTMLElement).style.transform).toContain('translate(0px, 0px)')
+    expect(wrapper.emitted('swipe')).toBeUndefined()
+  })
+
+  it('leaves a long press on a touch screen free to select text', async () => {
+    const { wrapper } = mountWithI18n(SwipeCard, 'en', props)
+    const card = wrapper.find('[data-testid="swipe-card"]').element
+    await firePointer(card, 'pointerdown', { pointerId: 1, pointerType: 'touch', clientX: 100, clientY: 100 })
+    expect(isPrevented(card, selectStart())).toBe(false)
+    expect(isPrevented(card, new MouseEvent('contextmenu', { bubbles: true, cancelable: true }))).toBe(false)
+  })
+
+  it('keeps the cards behind the top card out of a selection', () => {
+    const { wrapper } = mountWithI18n(SwipeCard, 'en', { ...props, depth: 1, interactive: false })
+    expect(wrapper.find('[data-testid="swipe-card"]').classes()).toContain('card--behind')
+  })
+})
+
 describe('game store answers', () => {
   it('records NO for left and YES for right via the store', () => {
     const { store } = memoryStore()
@@ -66,16 +114,17 @@ describe('game store answers', () => {
     expect(store.state.currentQuestionIndex).toBe(2)
   })
 
-  it('shows every question exactly once in a game', () => {
+  it('deals 24 different cards from the pool and shows each one once', () => {
     const { store } = memoryStore(7)
     store.start()
-    expect([...store.state.questionOrder].sort()).toEqual([...QUESTION_IDS].sort())
+    expect(store.state.questionOrder).toHaveLength(24)
+    expect(store.state.questionOrder.every((id) => QUESTION_IDS.includes(id))).toBe(true)
     const seen: string[] = []
     answerAll(store, (id) => {
       seen.push(id)
       return 'yes'
     })
-    expect(seen).toHaveLength(24)
+    expect(seen).toEqual(store.state.questionOrder)
     expect(new Set(seen).size).toBe(24)
   })
 

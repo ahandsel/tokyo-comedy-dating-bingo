@@ -35,6 +35,27 @@ The page can still scroll from anywhere outside the top card.
 `committed` guards against a second decision for the same drag, and `onPointerDown` refuses to start a drag on a card that is already leaving.
 
 
+### Text selection
+
+The app leaves visible text selectable wherever the browser allows it, so a player can copy a question, translate it, look up a word, or have it read aloud.
+On the top card, the same drag would both answer and select, so each input type gets one meaning:
+
+* **Mouse and pen:** a drag moves the card.
+  `onSelectStart` cancels `selectstart` while the drag is active, so the drag never highlights text.
+  A double or triple click selects a word or the whole question, because `onMouseDown` sees a click count (`detail`) of 2 or more and calls `stopDrag()`, so that press never moves the card.
+  A drag that starts on text that is already selected still moves the card.
+* **Touch:** a drag never selects text, so `selectstart` is left alone, and a long press selects text as it does on any page.
+  The card does not cancel `contextmenu` or set `-webkit-touch-callout: none`, so the long press can open the system menu with Copy.
+  A finger that rests on the card long enough to count as a long press selects text instead of swiping.
+
+The cards behind the top card (`card--behind`) and the YES and NO stamps set `user-select: none`.
+The top card hides the first, and the second are invisible until a drag, so their text would only add noise to a select-all copy.
+
+Buttons do not set `user-select: none`, but Chrome never starts a selection from a press inside a `<button>`, even with `user-select: text`.
+A drag that starts outside a button, or a select-all, still includes its label.
+The question on a board cell can also be selected in the cell detail dialog.
+
+
 ## SwipeDeck: the stack and the animations
 
 The deck receives `questionIds` (the remaining IDs, current first) and renders a single `v-for` over a computed `cards` list:
@@ -97,7 +118,8 @@ The deck's `aria-label` describes the same keys for screen-reader users.
   The deck is a flex item with `min-height: 240px` and `max-height: min(480px, 58dvh)`, so it shrinks on short screens (iPhone SE) and grows on tall ones.
 * `100dvh` sizes the app to the visible viewport as Safari's toolbars collapse; a `@supports` fallback uses `vh` on old browsers.
 * `touch-action: manipulation` on `body` removes the double-tap zoom delay while keeping pinch zoom.
-* `-webkit-tap-highlight-color: transparent` and `-webkit-touch-callout: none` stop the grey tap flash and the long-press callout on cards and buttons.
+* `-webkit-tap-highlight-color: transparent` stops the grey tap flash on cards and buttons.
+  A long press on a card selects its text, as described in "Text selection".
 * `env(safe-area-inset-*)` padding keeps content clear of the notch and the home indicator; `viewport-fit=cover` in `index.html` enables it.
 * Buttons are at least 44px tall, including the language switcher.
 * The modal uses the native `<dialog>` (iOS 15.4 and newer) with `max-height: 90dvh` and internal scrolling.
@@ -107,5 +129,6 @@ The deck's `aria-label` describes the same keys for screen-reader users.
 ## Tests
 
 `src/tests/swipe.test.ts` covers gestures, the store rules, the double-event guard, the preserved element during the exit animation, the leaving-to-returning switch on undo, a new answer right after an undo, and the flick rules with fake timers.
+It also covers which events the card cancels for text selection, but jsdom cannot select text, so check selection itself in a real browser and on a phone.
 `src/tests/keyboard.test.ts` covers the page-wide keys, key repeat, modifiers, listener cleanup, and the board's arrow-key navigation.
 jsdom has no `PointerEvent` constructor, so `helpers.ts` builds a `MouseEvent` and defines the pointer properties on it.

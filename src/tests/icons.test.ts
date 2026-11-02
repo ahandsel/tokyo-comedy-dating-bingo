@@ -1,7 +1,10 @@
 import { nextTick } from 'vue'
 import { describe, expect, it } from 'vitest'
+import SwipeCard from '../components/SwipeCard.vue'
+import { getQuestionText, questions } from '../data/questions'
 import en from '../i18n/locales/en'
-import { flush, mountApp } from './helpers'
+import type { Locale } from '../types/game'
+import { flush, mountApp, mountWithI18n } from './helpers'
 
 /** Every Lucide icon is decorative: the text next to it, or the control's label, carries the meaning. */
 function expectIconsHidden(root: Element) {
@@ -37,6 +40,9 @@ describe('Lucide icons', () => {
     await nextTick()
 
     expectIconsHidden(wrapper.element)
+    const newTabLinks = wrapper.findAll('a[target="_blank"]')
+    expect(newTabLinks.length).toBeGreaterThan(0)
+    newTabLinks.forEach((link) => expect(link.find('svg.lucide-external-link').exists()).toBe(true))
     expect(wrapper.find('[data-testid="btn-download"]').text()).toBe('Save image')
     expect(wrapper.find('[data-testid="btn-play-again"]').text()).toBe('Play again')
 
@@ -81,5 +87,53 @@ describe('Lucide icons', () => {
     await wrapper.find('[data-testid="btn-play-again"]').trigger('click')
     expect(wrapper.find('dialog[open] svg.confirm__icon.lucide-triangle-alert').exists()).toBe(true)
     wrapper.unmount()
+  })
+
+  it('show the chosen artwork above the text of each swipe card', () => {
+    // The Lucide class of each card's icon. q21, q25, and q26 have no icon.
+    const cardIcons: Record<string, string> = {
+      q01: 'lucide-face-expressionless',
+      q02: 'lucide-hand-coins',
+      q03: 'lucide-earth',
+      q04: 'lucide-scan-face',
+      q05: 'lucide-bed-double',
+      q06: 'lucide-ghost',
+      q07: 'lucide-venetian-mask',
+      q08: 'lucide-martini',
+      q09: 'lucide-house',
+      q10: 'lucide-magnet',
+      q11: 'lucide-gem',
+      q12: 'lucide-banana',
+      q13: 'lucide-anchor',
+      q14: 'lucide-heart-handshake',
+      q15: 'lucide-flame',
+      q16: 'lucide-languages',
+      q17: 'lucide-message-circle-heart',
+      q18: 'lucide-door-open',
+      q19: 'lucide-dog',
+      q20: 'lucide-smartphone',
+      q22: 'lucide-unlink',
+      q23: 'lucide-thumbs-up',
+      q24: 'lucide-origami',
+      q27: 'lucide-graduation-cap',
+    }
+    const mountCard = (questionId: string, locale: Locale) =>
+      mountWithI18n(SwipeCard, locale, { questionId, text: getQuestionText(questionId, locale), number: 1, total: 24 })
+        .wrapper
+
+    for (const locale of ['en', 'ja'] as const) {
+      for (const { id } of questions) {
+        const card = mountCard(id, locale)
+        const icon = card.find('[data-testid="card-icon"]')
+        if (cardIcons[id]) {
+          expect(icon.classes()).toContain(cardIcons[id])
+          expect(icon.attributes('aria-hidden')).toBe('true')
+          expect(icon.element.nextElementSibling?.textContent).toBe(getQuestionText(id, locale))
+        } else {
+          expect(icon.exists()).toBe(false)
+        }
+        card.unmount()
+      }
+    }
   })
 })

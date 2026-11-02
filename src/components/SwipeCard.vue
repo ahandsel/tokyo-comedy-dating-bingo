@@ -1,6 +1,33 @@
 <script setup lang="ts">
-import { Heart, X } from '@lucide/vue'
-import { computed, onBeforeUnmount, ref } from 'vue'
+import {
+  Anchor,
+  Banana,
+  BedDouble,
+  Dog,
+  DoorOpen,
+  Earth,
+  FaceExpressionless,
+  Flame,
+  Gem,
+  Ghost,
+  GraduationCap,
+  HandCoins,
+  Heart,
+  HeartHandshake,
+  House,
+  Languages,
+  Magnet,
+  Martini,
+  MessageCircleHeart,
+  Origami,
+  ScanFace,
+  Smartphone,
+  ThumbsUp,
+  Unlink,
+  VenetianMask,
+  X,
+} from '@lucide/vue'
+import { computed, onBeforeUnmount, ref, type Component } from 'vue'
 import { useI18n } from 'vue-i18n'
 import type { SwipeDirection } from '../types/game'
 
@@ -28,6 +55,39 @@ const emit = defineEmits<{
 
 const { t } = useI18n()
 
+/**
+ * Artwork shown above the text of a card, keyed by question ID.
+ * The owner chose no icon for q21, q25, and q26.
+ */
+const CARD_ICONS: Partial<Record<string, Component>> = {
+  q01: FaceExpressionless,
+  q02: HandCoins,
+  q03: Earth,
+  q04: ScanFace,
+  q05: BedDouble,
+  q06: Ghost,
+  q07: VenetianMask,
+  q08: Martini,
+  q09: House,
+  q10: Magnet,
+  q11: Gem, // the stone of a wedding ring
+  q12: Banana,
+  q13: Anchor, // the naval bases at Yokosuka and Sasebo
+  q14: HeartHandshake,
+  q15: Flame,
+  q16: Languages,
+  q17: MessageCircleHeart,
+  q18: DoorOpen,
+  q19: Dog, // the Hachiko statue in front of Shibuya Station
+  q20: Smartphone,
+  q22: Unlink,
+  q23: ThumbsUp,
+  q24: Origami, // a paper crane
+  q27: GraduationCap,
+}
+
+const icon = computed(() => CARD_ICONS[props.questionId])
+
 /** Drag distance that commits an answer: 35% of the card width, capped at 120px. */
 const MAX_THRESHOLD_PX = 120
 const THRESHOLD_RATIO = 0.35
@@ -41,6 +101,7 @@ const dragging = ref(false)
 const dx = ref(0)
 const dy = ref(0)
 let pointerId: number | null = null
+let pointerType = ''
 let startX = 0
 let startY = 0
 let committed = false
@@ -100,6 +161,7 @@ function onPointerDown(event: PointerEvent) {
   if (!props.interactive || props.leaving || pointerId !== null) return
   if (event.pointerType === 'mouse' && event.button !== 0) return
   pointerId = event.pointerId
+  pointerType = event.pointerType
   startX = event.clientX
   startY = event.clientY
   dragging.value = true
@@ -120,20 +182,28 @@ function onPointerMove(event: PointerEvent) {
   recordSample(event.clientX)
 }
 
-function finishDrag(event: PointerEvent, cancelled: boolean) {
-  if (!dragging.value || event.pointerId !== pointerId) return
+/** Ends the drag and returns the card to rest; reports how far and how fast it moved. */
+function stopDrag(): { distance: number; velocity: number } {
+  const id = pointerId
   dragging.value = false
   pointerId = null
-  try {
-    el.value?.releasePointerCapture?.(event.pointerId)
-  } catch {
-    /* capture may already be released */
+  if (id !== null) {
+    try {
+      el.value?.releasePointerCapture?.(id)
+    } catch {
+      /* capture may already be released */
+    }
   }
-  const distance = dx.value
-  const velocity = flickVelocity()
+  const gesture = { distance: dx.value, velocity: flickVelocity() }
   dx.value = 0
   dy.value = 0
   samples = []
+  return gesture
+}
+
+function finishDrag(event: PointerEvent, cancelled: boolean) {
+  if (!dragging.value || event.pointerId !== pointerId) return
+  const { distance, velocity } = stopDrag()
   if (cancelled || committed) return
   const pastThreshold = Math.abs(distance) >= threshold.value
   const flicked =
@@ -154,6 +224,19 @@ function onPointerCancel(event: PointerEvent) {
   finishDrag(event, true)
 }
 
+/** A double or triple click selects a word or a line of the card, so that press never moves it. */
+function onMouseDown(event: MouseEvent) {
+  if (event.detail >= 2 && dragging.value) stopDrag()
+}
+
+/**
+ * A mouse or pen drag moves the card, so it must not select text at the same time.
+ * A touch drag never selects text, so a long press on a touch screen stays free to select.
+ */
+function onSelectStart(event: Event) {
+  if (dragging.value && pointerType !== 'touch') event.preventDefault()
+}
+
 onBeforeUnmount(() => {
   pointerId = null
 })
@@ -164,6 +247,7 @@ onBeforeUnmount(() => {
     ref="el"
     class="card"
     :class="{
+      'card--behind': depth > 0,
       'card--dragging': dragging,
       'card--interactive': interactive && !leaving,
       'card--leaving-left': leaving === 'left',
@@ -182,14 +266,18 @@ onBeforeUnmount(() => {
     @pointerup="onPointerUp"
     @pointercancel="onPointerCancel"
     @lostpointercapture="onPointerCancel"
+    @mousedown="onMouseDown"
+    @selectstart="onSelectStart"
     @dragstart.prevent
-    @contextmenu="interactive ? $event.preventDefault() : undefined"
   >
     <header class="card__header">
       <span class="card__number">{{ t('game.progress', { current: number, total }) }}</span>
       <span class="card__heart" aria-hidden="true">&#10084;&#65039;</span>
     </header>
-    <p class="card__text" :class="textSizeClass">{{ text }}</p>
+    <div class="card__body">
+      <component :is="icon" v-if="icon" class="card__icon" aria-hidden="true" data-testid="card-icon" />
+      <p class="card__text" :class="textSizeClass">{{ text }}</p>
+    </div>
     <footer class="card__footer" aria-hidden="true">
       <span class="card__hint card__hint--no">&larr; {{ t('game.no') }}</span>
       <span class="card__hint card__hint--yes">{{ t('game.yes') }} &rarr;</span>
@@ -228,11 +316,14 @@ onBeforeUnmount(() => {
   transition:
     transform 280ms cubic-bezier(0.2, 0.8, 0.2, 1),
     opacity 280ms ease;
-  user-select: none;
-  -webkit-user-select: none;
-  -webkit-touch-callout: none;
   -webkit-tap-highlight-color: transparent;
   overflow: hidden;
+}
+
+/* The top card hides the cards behind it, so their text stays out of a select-all copy. */
+.card--behind {
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .card--interactive {
@@ -260,8 +351,23 @@ onBeforeUnmount(() => {
   font-size: 1.2rem;
 }
 
-.card__text {
+.card__body {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+}
+
+.card__icon {
+  align-self: center;
+  width: 3rem;
+  height: 3rem;
+  stroke-width: 1.75;
+  color: var(--berry);
+}
+
+.card__text {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -312,6 +418,9 @@ onBeforeUnmount(() => {
   opacity: 0;
   pointer-events: none;
   transition: opacity 120ms ease;
+  /* Invisible until a drag, so it stays out of a select-all copy. */
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .card__stamp-icon {

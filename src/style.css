@@ -119,7 +119,6 @@ button {
     transform 160ms ease,
     box-shadow 160ms ease,
     background-color 160ms ease;
-  user-select: none;
 }
 
 .btn:active {
