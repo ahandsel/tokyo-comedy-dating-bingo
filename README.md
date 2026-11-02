@@ -1,10 +1,13 @@
 # Tokyo Comedy Dating Bingo
 
-Tinder-style swiping meets a classic 5x5 Bingo card. Swipe through 24 Tokyo dating experiences, then reveal a randomized Bingo board built from your answers. Fully bilingual (English and Japanese), fully client-side, and deployable to GitHub Pages as a static site.
+Tinder-style swiping meets a classic 5x5 Bingo card.
+Swipe through 24 Tokyo dating experiences, then reveal a randomized Bingo board built from your answers.
+Fully bilingual (English and Japanese), fully client-side, and deployable to GitHub Pages as a static site.
 
 * Live site (after deployment): `https://<owner>.github.io/tokyo-comedy-dating-bingo/`
 * Stack: Vue 3, TypeScript, Vite, Vue I18n, Vitest, pnpm, GitHub Actions, GitHub Pages
-* Contains mature, dating-related humour. Intended for adults.
+* Contains mature, dating-related humour.
+  Intended for adults.
 * Unofficial and fan-made, inspired by the comedy of Yurié Collins.
   See [Credits](#credits).
 
@@ -51,13 +54,22 @@ The Bingo idea and the 24 questions come from her show Tokyo Hoe Tales at [Tokyo
 
 ## Game rules
 
-1. Press "Start swiping". The 24 question IDs are shuffled once with Fisher-Yates and the order is saved.
-2. Each card shows one dating experience. Swipe right (or flick right, press the Yes button, or press the right arrow key) if you have experienced it. Swipe left (No button, left arrow key) if you have not.
-3. "Undo" (or the down arrow key, Backspace, or Ctrl/Cmd+Z) reopens the previous card and removes its answer. The keys work anywhere on the swipe screen; nothing needs focus first.
+1. Press "Start swiping".
+   The 24 question IDs are shuffled once with Fisher-Yates and the order is saved.
+2. Each card shows one dating experience.
+   Swipe right (or flick right, press the Yes button, or press the right arrow key) if you have experienced it.
+   Swipe left (No button, left arrow key) if you have not.
+3. "Undo" (or the down arrow key, Backspace, or Ctrl/Cmd+Z) reopens the previous card and removes its answer.
+   The keys work anywhere on the swipe screen; nothing needs focus first.
 4. After the 24th answer, a 5x5 board is generated: the 24 questions are shuffled again, independently of your answers and of the swipe order, and placed around a free centre square (row 2, column 2, flat index 12, zero-based).
-5. A square is marked when its answer is YES or it is the free centre. Any complete row, column, or diagonal (12 possible lines) is a Bingo. Multiple lines are counted and overlapping cells are deduplicated.
-6. On the results screen you can tap any square to see the full question, your answer, and whether it is on a winning line, and you can change the answer. Statistics and winning lines recalculate; the board arrangement never changes.
-7. "Play again" asks for confirmation, then clears the game. Your language preference is kept.
+5. A square is marked when its answer is YES or it is the free centre.
+   Any complete row, column, or diagonal (12 possible lines) is a Bingo.
+   Multiple lines are counted and overlapping cells are deduplicated.
+6. On the results screen you can tap any square to see the full question, your answer, and whether it is on a winning line, and you can change the answer.
+   Statistics and winning lines recalculate; the board arrangement never changes.
+7. "Play again" asks for confirmation, then clears the game.
+   The confirmation opens with focus on "Cancel", so pressing Enter twice does not clear the game by accident.
+   Your language preference is kept.
 
 The free centre is not counted in the YES total.
 
@@ -66,13 +78,27 @@ The free centre is not counted in the YES total.
 
 Both languages ship in the first release and are equally complete.
 
-* **Switcher.** `English | 日本語` appears on the welcome, swipe, and results screens. Switching updates the interface, the current card, buttons, progress text, board labels, results, statistics, dialogs, status announcements, and export text immediately.
-* **Switching never restarts the game.** Answers are keyed by stable question IDs (`q01` to `q24`), never by translated text. The question order and the final board arrangement are stored as ID lists, so switching language only changes what is displayed.
-* **Detection on first visit.** A saved preference in LocalStorage wins. Otherwise `navigator.languages` (falling back to `navigator.language`) is scanned: the first tag starting with `ja` selects Japanese, the first tag starting with `en` selects English, and anything else falls back to English.
-* **Persistence.** The preference is saved under the key `tcdb:preferences` only when you pick a language with the switcher; a merely detected locale is not saved. It is stored separately from game state, so restarting a game does not reset the language.
-* **Document metadata.** `document.documentElement.lang` and `document.title` follow the selected language. Accessible labels and live-region announcements are localized.
-* **Typography.** The body font stack is `Noto Sans JP` (loaded from Google Fonts) followed by Hiragino Sans, Yu Gothic, Meiryo, and the system UI font, so Japanese renders correctly even when the web font is unavailable. The script title uses Pacifico with a cursive fallback and is only used for the Latin brand name. Japanese text uses `line-break: strict` and `overflow-wrap: anywhere` so long labels wrap inside cards and board cells.
-* **Export.** The PNG is drawn on a canvas with the same CJK-capable font stack after `document.fonts` has loaded, and the canvas `lang` attribute is set so glyph selection is correct.
+* **Switcher.**
+  `English | 日本語` appears on the welcome, swipe, and results screens.
+  Switching updates the interface, the current card, buttons, progress text, board labels, results, statistics, dialogs, status announcements, and export text immediately.
+* **Switching never restarts the game.**
+  Answers are keyed by stable question IDs (`q01` to `q24`), never by translated text.
+  The question order and the final board arrangement are stored as ID lists, so switching language only changes what is displayed.
+* **Detection on first visit.**
+  A saved preference in LocalStorage wins.
+  Otherwise `navigator.languages` (falling back to `navigator.language`) is scanned: the first tag starting with `ja` selects Japanese, the first tag starting with `en` selects English, and anything else falls back to English.
+* **Persistence.**
+  The preference is saved under the key `tcdb:preferences` only when you pick a language with the switcher; a merely detected locale is not saved.
+  It is stored separately from game state, so restarting a game does not reset the language.
+* **Document metadata.**
+  `document.documentElement.lang` and `document.title` follow the selected language.
+  Accessible labels and live-region announcements are localized.
+* **Typography.**
+  The body font stack is `Noto Sans JP` (loaded from Google Fonts) followed by Hiragino Sans, Yu Gothic, Meiryo, and the system UI font, so Japanese renders correctly even when the web font is unavailable.
+  The script title uses Pacifico with a cursive fallback and is only used for the Latin brand name.
+  Japanese text uses `line-break: strict` and `overflow-wrap: anywhere` so long labels wrap inside cards and board cells.
+* **Export.**
+  The PNG is drawn on a canvas with the same CJK-capable font stack after `document.fonts` has loaded, and the canvas `lang` attribute is set so glyph selection is correct.
 
 
 ## Game-state persistence and privacy
@@ -91,11 +117,17 @@ interface GameState {
 }
 ```
 
-Loading validates the shape strictly (version, phase, a full permutation of question IDs, valid answers, consistent undo history, a valid 25-cell board with the free centre, and phase-specific consistency such as "a board requires all 24 answers"). Anything else is discarded, a fresh game begins, and the welcome screen says so. If LocalStorage is unavailable the game still runs in memory and the welcome screen warns that progress will not survive a refresh.
+Loading validates the shape strictly (version, phase, a full permutation of question IDs, valid answers, consistent undo history, a valid 25-cell board with the free centre, and phase-specific consistency such as "a board requires all 24 answers").
+Anything else is discarded, a fresh game begins, and the welcome screen says so.
+If LocalStorage is unavailable the game still runs in memory and the welcome screen warns that progress will not survive a refresh.
 
-The welcome screen offers "Continue game" for a paused game and "View my board" for a finished one. When either exists, the start button reads "New game" and asks for confirmation before discarding it.
+The welcome screen offers "Continue game" for a paused game and "View my board" for a finished one.
+When either exists, the start button reads "New game" and asks for confirmation before discarding it.
 
-Privacy: everything runs in the browser. No backend, database, analytics, API keys, or remote logging. Answers are never placed in URLs. Sharing happens only when you press "Share" or "Save image", and the image is generated locally.
+Privacy: everything runs in the browser.
+No backend, database, analytics, API keys, or remote logging.
+Answers are never placed in URLs.
+Sharing happens only when you press "Share" or "Save image", and the image is generated locally.
 
 
 ## Technology stack
@@ -131,7 +163,10 @@ Candidates were reviewed for Vue 3 compatibility, TypeScript support, gesture su
 | [vue-tinder](https://github.com/shanlh/vue-tinder) | MIT | Vue 2 only, no TypeScript. | Rejected: incompatible with Vue 3. |
 | [VueUse](https://vueuse.org/) `usePointerSwipe` | MIT | Vue 3, typed, mouse/touch/pen, direction and threshold detection, 1.3 kB. No rotation, overlays, or undo (those are UI concerns anyway). | Not adopted. It would only replace the pointer bookkeeping; the card transform, stamps, and threshold logic still had to be written. A custom implementation keeps the app dependency-free here. |
 
-Implemented: `SwipeCard.vue` uses Pointer Events with pointer capture and `touch-action: none`, a threshold of `min(120px, 35% of card width)`, a flick rule (40px at 0.5px/ms) for quick thumb swipes, rotation proportional to drag distance, YES/NO stamps whose opacity follows progress, snap-back below the threshold, and a leaving-card exit transition that starts from wherever the finger let go. `SwipeDeck.vue` stacks the next two cards, keeps leaving cards under their original keys so the exit animates, and ignores repeated events for a card that is already leaving. `GameView.vue` owns the page-wide keyboard controls. See [docs/swiping.md](docs/swiping.md).
+Implemented: `SwipeCard.vue` uses Pointer Events with pointer capture and `touch-action: none`, a threshold of `min(120px, 35% of card width)`, a flick rule (40px at 0.5px/ms) for quick thumb swipes, rotation proportional to drag distance, YES/NO stamps whose opacity follows progress, snap-back below the threshold, and a leaving-card exit transition that starts from wherever the finger let go.
+`SwipeDeck.vue` stacks the next two cards, keeps leaving cards under their original keys so the exit animates, and ignores repeated events for a card that is already leaving.
+`GameView.vue` owns the page-wide keyboard controls.
+See [docs/swiping.md](docs/swiping.md).
 
 
 ### Bingo
@@ -142,7 +177,8 @@ Implemented: `SwipeCard.vue` uses Pointer Events with pointer capture and `touch
 | [bingo-ts](https://github.com/ya-s-u/bingo-ts) | MIT | Clean TypeScript, 5x5 board with free centre, row/column/diagonal judging. Cells are numbers 1 to 75 in B-I-N-G-O ranges; no custom text labels. | Rejected: number-based model would need adapting and gives no advantage over a 60-line custom engine. |
 | [lucasnetau/bingo](https://github.com/lucasnetau/bingo) | MIT | Plain HTML 75-ball bingo with manual win claiming. | Rejected: no engine to reuse. |
 
-Implemented: `utils/board.ts` (Fisher-Yates arrangement with FREE at index 12, validation) and `utils/bingo.ts` (12 precomputed lines, marked-cell evaluation returning `BingoResult` with deduplicated winning cell indices). The engine never sees translated text.
+Implemented: `utils/board.ts` (Fisher-Yates arrangement with FREE at index 12, validation) and `utils/bingo.ts` (12 precomputed lines, marked-cell evaluation returning `BingoResult` with deduplicated winning cell indices).
+The engine never sees translated text.
 
 
 ### Deployment references
@@ -164,7 +200,8 @@ Runtime:
 
 Development: `vite`, `@vitejs/plugin-vue`, `vue-tsc`, `typescript` (Apache-2.0), `@vue/tsconfig`, `vitest`, `@vue/test-utils`, `jsdom`, `@types/node`, `@types/canvas-confetti` (all MIT unless noted).
 
-Fonts: Noto Sans JP and Pacifico are loaded from Google Fonts under the SIL Open Font License. If the fonts fail to load, system fallbacks are used.
+Fonts: Noto Sans JP and Pacifico are loaded from Google Fonts under the SIL Open Font License.
+If the fonts fail to load, system fallbacks are used.
 
 The code is released under the MIT License (see `LICENSE`).
 The license does not cover the Bingo idea or the question content, which belong to Yurié Collins.
@@ -190,27 +227,30 @@ pnpm check      # lint, test, then build; run it before every commit
 pnpm index      # list every pnpm script defined in package.json
 ```
 
-`pnpm test:watch` runs Vitest in watch mode. pnpm is the only supported package manager; do not commit `package-lock.json` or `yarn.lock`.
+`pnpm test:watch` runs Vitest in watch mode.
+pnpm is the only supported package manager; do not commit `package-lock.json` or `yarn.lock`.
 
-Formatting rules live in `.prettierrc.json5` and `.markdownlint-cli2.jsonc`, imported from [ahandsel.github.io](https://github.com/ahandsel/ahandsel.github.io). `src/` is excluded in `.prettierignore` because `prettier-plugin-autocorrect` would only re-space the Japanese UI copy there.
+Formatting rules live in `.prettierrc.json5` and `.markdownlint-cli2.jsonc`, imported from [ahandsel.github.io](https://github.com/ahandsel/ahandsel.github.io).
+`src/` is excluded in `.prettierignore` because `prettier-plugin-autocorrect` would only re-space the Japanese UI copy there.
 
 
 ## Testing
 
-`pnpm test` runs 102 tests across ten files in `src/tests/`:
+`pnpm test` runs 109 tests across ten files in `src/tests/`:
 
 * `questions.test.ts`: 24 questions, unique IDs, both translations present, corrected labels, 告白 rendering.
 * `i18n.test.ts`: browser-language detection, saved preference precedence, corrupted preferences, key parity between `en` and `ja`, English fallback, progress formatting, the switcher, full-app language switching on the welcome, swipe, and results screens (IDs, answers, order, and board preserved; preference preserved across restart and reload), and the credits on the welcome screen and in the share text.
-* `swipe.test.ts`: pointer gestures (left, right, snap-back, visual feedback, non-interactive cards), store answers, undo, re-answering, 24-answer completion, button/keyboard/gesture equivalence, double-event protection, the preserved card element during the exit animation, undo while a card is leaving, and the flick rules.
+* `swipe.test.ts`: pointer gestures (left, right, snap-back, visual feedback, non-interactive cards), store answers, undo, re-answering, 24-answer completion, button/keyboard/gesture equivalence, double-event protection, the preserved card element during the exit animation, undo while a card is leaving, a new answer right after an undo, and the flick rules.
 * `keyboard.test.ts`: page-wide arrow keys and undo shortcuts, key repeat, modifier keys, listener cleanup, and arrow-key navigation inside the Bingo grid.
-* `dialogs.test.ts`: the native dialog wrapper, the start-over confirmation on the welcome screen, and the corrupted-data notice.
+* `dialogs.test.ts`: the native dialog wrapper, the initial focus on "Cancel" and "Close", the start-over confirmation on the welcome screen, and the corrupted-data notice.
 * `icons.test.ts`: Lucide icons stay hidden from screen readers and add no text to button labels on every screen and in the cell dialog, each board square shows the check, cross, or heart icon that matches its state, each status message and the restart confirmation show their icon, and each link that opens a new tab shows the external-link icon.
 * `board.test.ts`: shuffle, 25 cells, FREE centre, all 24 questions once, validation, independence from answers and swipe order, stable order across reload and edits.
 * `bingo.test.ts`: 12 lines, horizontal, vertical, both diagonals, free centre, all NO, all YES (12 lines), multiple wins with deduplication, four-in-a-row is not Bingo, language independence.
-* `storage.test.ts`: strict parsing, phase-consistency rules, auto-save and reload of answers, order, index and board, restart, corrupted storage, missing storage, answer editing without reshuffle, pause and resume, and the one-time reveal flag.
+* `storage.test.ts`: strict parsing, phase-consistency rules, auto-save and reload of answers, order, index, and board, restart, corrupted storage, missing storage, answer editing without reshuffle, pause and resume, and the one-time reveal flag.
 * `export.test.ts`: tokenizing and wrapping for English and Japanese, canvas drawing with all 25 cells in each language, the board and stat marks drawn as Lucide icon shapes that match the shapes `@lucide/vue` renders, Web Share fallback.
 
-Build and deployment checks (`pnpm typecheck`, `pnpm build`, `pnpm install --frozen-lockfile`) run in CI before every deployment. End-to-end browser tests are not included; see Known limitations.
+Build and deployment checks (`pnpm typecheck`, `pnpm build`, `pnpm install --frozen-lockfile`) run in CI before every deployment.
+End-to-end browser tests are not included; see Known limitations.
 
 
 ## Production builds
@@ -220,7 +260,8 @@ pnpm build
 pnpm preview
 ```
 
-`vite.config.ts` sets `base` from the `BASE_PATH` environment variable, defaulting to `/tokyo-comedy-dating-bingo/`. The same base is used by `pnpm dev` and `pnpm preview`, so the local URL mirrors production (for example `http://localhost:5173/tokyo-comedy-dating-bingo/`).
+`vite.config.ts` sets `base` from the `BASE_PATH` environment variable, defaulting to `/tokyo-comedy-dating-bingo/`.
+The same base is used by `pnpm dev` and `pnpm preview`, so the local URL mirrors production (for example `http://localhost:5173/tokyo-comedy-dating-bingo/`).
 
 ```sh
 BASE_PATH=/my-fork-name/ pnpm build   # project site with a different repository name
@@ -232,7 +273,9 @@ The app is a single page with no router, so refreshing on GitHub Pages never pro
 
 ## GitHub Pages deployment
 
-`.github/workflows/deploy.yml` runs on every push to `main` and on manual dispatch. It checks out the repository, sets up pnpm (version from `packageManager`) and Node.js (version from `.node-version`), runs `pnpm install --frozen-lockfile`, `pnpm test`, `pnpm typecheck`, and `pnpm build` with `BASE_PATH=/<repository-name>/`, then uploads `dist/` and deploys it with `actions/deploy-pages`. Permissions are limited to `contents: read`, `pages: write`, and `id-token: write`.
+`.github/workflows/deploy.yml` runs on every push to `main` and on manual dispatch.
+It checks out the repository, sets up pnpm (version from `packageManager`) and Node.js (version from `.node-version`), runs `pnpm install --frozen-lockfile`, `pnpm test`, `pnpm typecheck`, and `pnpm build` with `BASE_PATH=/<repository-name>/`, then uploads `dist/` and deploys it with `actions/deploy-pages`.
+Permissions are limited to `contents: read`, `pages: write`, and `id-token: write`.
 
 One-time setup:
 
@@ -247,7 +290,8 @@ If you rename the repository, nothing needs to change; the workflow derives the 
 ## Custom domain setup
 
 1. In the workflow, change the build step's `BASE_PATH` to `/`.
-2. Add a `public/CNAME` file containing your domain (for example `bingo.example.com`). Vite copies it into `dist/`.
+2. Add a `public/CNAME` file containing your domain (for example `bingo.example.com`).
+   Vite copies it into `dist/`.
 3. Configure the DNS record for your domain according to GitHub's documentation, then enter the domain under Settings, then Pages, then Custom domain.
 
 
@@ -306,7 +350,8 @@ tokyo-comedy-dating-bingo/
 
 ## Updating questions
 
-Edit `src/data/questions.ts`. Each entry needs a stable `id` and `text` for every locale:
+Edit `src/data/questions.ts`.
+Each entry needs a stable `id` and `text` for every locale:
 
 ```ts
 { id: 'q25', text: { en: 'New experience', ja: '新しい経験' } }
@@ -314,16 +359,21 @@ Edit `src/data/questions.ts`. Each entry needs a stable `id` and `text` for ever
 
 Rules enforced by tests and by the board generator:
 
-* Exactly 24 questions (a 5x5 board with a free centre). Changing the count requires changing `BOARD_SIZE` logic and is not supported as-is.
-* IDs must be unique. Keep existing IDs stable: saved games reference them, and changing an ID invalidates saved progress (the loader will safely start a new game).
+* Exactly 24 questions (a 5x5 board with a free centre).
+  Changing the count requires changing `BOARD_SIZE` logic and is not supported as-is.
+* IDs must be unique.
+  Keep existing IDs stable: saved games reference them, and changing an ID invalidates saved progress (the loader will safely start a new game).
 * Every locale must have non-empty text.
 
 
 ## Editing translations
 
-Interface strings live in `src/i18n/locales/en.ts` and `src/i18n/locales/ja.ts`. The English file defines the schema; the Japanese file is typed as `MessageSchema`, so `pnpm typecheck` fails if a key is missing, and `i18n.test.ts` checks key parity in both directions. Question text is edited in `src/data/questions.ts`, not in the locale files, so each question is translated exactly once.
+Interface strings live in `src/i18n/locales/en.ts` and `src/i18n/locales/ja.ts`.
+The English file defines the schema; the Japanese file is typed as `MessageSchema`, so `pnpm typecheck` fails if a key is missing, and `i18n.test.ts` checks key parity in both directions.
+Question text is edited in `src/data/questions.ts`, not in the locale files, so each question is translated exactly once.
 
-Messages use Vue I18n named interpolation (`{current}`, `{total}`) and pipe-separated plural forms (`game.remaining`). Missing keys fall back to English at runtime.
+Messages use Vue I18n named interpolation (`{current}`, `{total}`) and pipe-separated plural forms (`game.remaining`).
+Missing keys fall back to English at runtime.
 
 
 ## Adding a third language
@@ -344,7 +394,8 @@ Colours, fonts, radii, and shadows are CSS custom properties at the top of `src/
 --blush: #fce4ec;  --rose: #e97ca6;  --berry: #a83f70;  --cream: #fff8f4;  --ink: #261a21;
 ```
 
-The exported PNG uses matching constants in `src/utils/exportImage.ts` (`COLORS`) and the same font stacks (`EXPORT_FONT_STACK`, `EXPORT_SCRIPT_STACK`). Web fonts are declared in `index.html`.
+The exported PNG uses matching constants in `src/utils/exportImage.ts` (`COLORS`) and the same font stacks (`EXPORT_FONT_STACK`, `EXPORT_SCRIPT_STACK`).
+Web fonts are declared in `index.html`.
 The export also draws the check, cross, heart, and star icons from Lucide path data that it copies into `EXPORT_ICON_PATHS`, because `src/utils/` must not import Vue.
 `src/tests/export.test.ts` fails when a copied path no longer matches the icon that `@lucide/vue` renders.
 
@@ -368,8 +419,11 @@ The [docs/](docs/README.md) folder explains each layer: [architecture](docs/arch
 
 ## Known limitations
 
-* No end-to-end browser tests. Gesture and language behaviour is covered by jsdom-based component and integration tests; real-device testing of touch gestures and PNG export is manual.
-* Web fonts come from Google Fonts. Offline or blocked, the app falls back to system fonts, so the title loses its script style and the export may render with a different sans-serif.
-* The Web Share API with files is only available on some browsers (notably mobile Safari and Chrome on Android). Elsewhere the Share button is hidden and "Save image" is used.
+* No end-to-end browser tests.
+  Gesture and language behaviour is covered by jsdom-based component and integration tests; real-device testing of touch gestures and PNG export is manual.
+* Web fonts come from Google Fonts.
+  Offline or blocked, the app falls back to system fonts, so the title loses its script style and the export may render with a different sans-serif.
+* The Web Share API with files is only available on some browsers (notably mobile Safari and Chrome on Android).
+  Elsewhere the Share button is hidden and "Save image" is used.
 * Native `<dialog>` is required for the modal backdrop and focus trapping; very old browsers show the dialog inline.
 * The board is fixed at 5x5 with 24 questions.

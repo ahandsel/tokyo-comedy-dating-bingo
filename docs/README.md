@@ -6,7 +6,7 @@ Each page under "Pages" covers one layer of the app and points at the source fil
 
 ## Pages
 
-* [architecture.md](architecture.md) - the big picture: phases, views, the data flow from a swipe to the saved state, and the folder layout.
+* [architecture.md](architecture.md) - an overview: phases, views, the data flow from a swipe to the saved state, and the folder layout.
 * [game-state.md](game-state.md) - the game store, the saved-state shape, the strict LocalStorage validation, and the rules for undo, resume, and restart.
 * [swiping.md](swiping.md) - the swipe card gesture engine, the deck animation model, the page-wide keyboard controls, and the mobile (iPhone) considerations.
 * [bingo-and-export.md](bingo-and-export.md) - board generation, winning-line evaluation, and the PNG export and share flow.
