@@ -38,7 +38,7 @@ function onUndo() {
   if (!lastId) return
   const previous = game.state.answers[lastId]
   if (!game.undo()) return
-  deck.value?.playReturn(previous === 'yes' ? 'right' : 'left')
+  deck.value?.playReturn(lastId, previous === 'yes' ? 'right' : 'left')
   announcement.value = t('game.undoAnnouncement', { current: game.state.currentQuestionIndex + 1 })
 }
 

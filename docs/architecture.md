@@ -62,7 +62,8 @@ It works on question IDs only, which is what makes language switching safe at an
   The store returns `readonly(state)`, so views can only change the game through the store's named functions.
 * **Animations are CSS; timing lives in one place.**
   Components only toggle classes and inline transforms.
-  `SwipeDeck` owns the single `EXIT_MS` constant that must match the CSS durations.
+  `SwipeDeck` owns the single `EXIT_MS` timer constant.
+  It matches the 320ms return animation in `SwipeCard.vue`, and it must be at least the 280ms exit transition there, so a leaving card is removed only after it has left.
 * **Native platform features first.**
   The modal uses the native `<dialog>` element, sharing uses the Web Share API with a download fallback, and gestures use Pointer Events instead of a library.
 

@@ -205,6 +205,22 @@ describe('swipe animations', () => {
     expect(element.classList.contains('card--interactive')).toBe(true)
     wrapper.unmount()
   })
+
+  it('accepts a new answer on an undone card before its exit animation ends', async () => {
+    const { wrapper } = mountApp('en')
+    await wrapper.find('[data-testid="btn-start"]').trigger('click')
+    const id = wrapper.find('[data-testid="swipe-card"]').attributes('data-question-id')!
+    await wrapper.find('[data-testid="btn-yes"]').trigger('click')
+    await wrapper.find('[data-testid="btn-undo"]').trigger('click')
+    // No time passes, so the first exit timer is still pending.
+    await wrapper.find('[data-testid="btn-no"]').trigger('click')
+
+    const saved = JSON.parse(localStorage.getItem('tcdb:game')!)
+    expect(saved.answers[id]).toBe('no')
+    expect(saved.currentQuestionIndex).toBe(1)
+    expect(wrapper.find('[data-testid="progress-label"]').text()).toBe('Card 2 of 24')
+    wrapper.unmount()
+  })
 })
 
 describe('flick gestures', () => {

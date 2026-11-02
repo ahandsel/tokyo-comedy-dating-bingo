@@ -21,7 +21,10 @@ const emit = defineEmits<{
 const { t } = useI18n()
 const { locale } = useLocale()
 
-/** Must match the transform transition and the return animation in SwipeCard.vue. */
+/**
+ * Matches the 320ms return animation in SwipeCard.vue.
+ * It must also be at least the 280ms exit transition there, so a leaving card is removed only after it has left.
+ */
 const EXIT_MS = 320
 /** How many upcoming cards are rendered in the stack. */
 const STACK_SIZE = 3
@@ -66,7 +69,8 @@ const cards = computed<CardView[]>(() => {
   const stackIds = new Set(stack)
   const out: CardView[] = []
   leaving.value.forEach((card, index) => {
-    // A card that was undone is back in the stack; the stack entry wins.
+    // Never render one ID twice.
+    // playReturn already drops an undone card from this list, so the stack entry wins.
     if (stackIds.has(card.id)) return
     out.push({
       id: card.id,
@@ -113,8 +117,12 @@ function swipe(direction: SwipeDirection) {
   emit('answer', direction)
 }
 
-/** Play the "card flies back" animation after an undo. */
-function playReturn(direction: SwipeDirection) {
+/**
+ * Play the "card flies back" animation after an undo.
+ * The undone card leaves the leaving list at once, so a new swipe on it is accepted right away.
+ */
+function playReturn(id: string, direction: SwipeDirection) {
+  removeLeaving(id)
   if (returningTimer) clearTimeout(returningTimer)
   returning.value = direction
   returningTimer = setTimeout(() => {

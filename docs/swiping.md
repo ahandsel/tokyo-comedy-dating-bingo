@@ -21,7 +21,7 @@ The card listens to Pointer Events, which cover touch, mouse, and pen with one c
    The card commits a swipe when either rule holds:
    * **Distance:** `|dx| >= threshold`, where the threshold is 35% of the card width, capped at 120px.
    * **Flick:** `|dx| >= 40px` and the velocity over the last 120ms is at least 0.5px per millisecond in the same direction.
-     This is what makes a quick thumb flick feel right on a phone.
+     This rule lets a quick thumb flick on a phone count as a swipe.
 4. `pointercancel` and `lostpointercapture` abort the drag without a decision.
 
 After the decision `dx` and `dy` reset to zero.
@@ -48,7 +48,7 @@ The earlier implementation rendered the leaving card under a new key, which remo
 
 Leaving cards are listed first and stack cards after them, so a swipe never reorders existing elements (a DOM move would also break the transition).
 Each leaving entry has its own timer; after `EXIT_MS` (320ms, or 0 with reduced motion) it is removed.
-Several cards can be in flight at once, which is what makes rapid keyboard answering look right.
+Several cards can be in flight at once, so each card still animates out when the player answers quickly with the keyboard.
 
 `swipe(direction)` is the one entry point:
 
@@ -57,9 +57,10 @@ Several cards can be in flight at once, which is what makes rapid keyboard answe
    Props only update on the next render, so a duplicate event in the same tick targets the same card and is dropped here.
 3. Add the card to the leaving list and emit `answer`.
 
-`playReturn(direction)` sets a `returning` flag on the top card for `EXIT_MS`.
+`playReturn(id, direction)` removes the undone card from the leaving list and sets a `returning` flag on the top card for `EXIT_MS`.
 The card gets `.card--returning-left` or `.card--returning-right`, whose keyframe animation flies it in from the side it left on.
-If the undone card is still in the leaving list, the stack entry wins in the render list, so the same element switches straight from leaving to returning.
+The card keeps its key, so the same element switches straight from leaving to returning.
+Because the card is no longer leaving, a new swipe on it counts at once, even while its first exit timer is still pending.
 
 
 ## Keyboard controls
@@ -80,7 +81,7 @@ Rules:
 * Other modifier combinations are left to the browser.
 * The handled keys call `preventDefault()`, so Backspace never navigates back.
 
-The hint under the deck shows the shortcuts only on devices with a fine pointer and hover, via a media query, because they are noise on a phone.
+The hint under the deck shows the shortcuts only on devices with a fine pointer and hover, via a media query, because they are not useful on a phone.
 The deck's `aria-label` describes the same keys for screen-reader users.
 
 
@@ -105,6 +106,6 @@ The deck's `aria-label` describes the same keys for screen-reader users.
 
 ## Tests
 
-`src/tests/swipe.test.ts` covers gestures, the store rules, the double-event guard, the preserved element during the exit animation, the leaving-to-returning switch on undo, and the flick rules with fake timers.
+`src/tests/swipe.test.ts` covers gestures, the store rules, the double-event guard, the preserved element during the exit animation, the leaving-to-returning switch on undo, a new answer right after an undo, and the flick rules with fake timers.
 `src/tests/keyboard.test.ts` covers the page-wide keys, key repeat, modifiers, listener cleanup, and the board's arrow-key navigation.
 jsdom has no `PointerEvent` constructor, so `helpers.ts` builds a `MouseEvent` and defines the pointer properties on it.
