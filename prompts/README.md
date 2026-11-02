@@ -19,8 +19,11 @@ To use a prompt, reference the prompt's file path in the AI interface (VS Code e
 
 ## Contents
 
-This folder holds no prompts yet.
-When you add one, list it here in a table with a one-line description, and keep the rows sorted alphabetically.
+| Prompt                                                               | Description                                                                                                        |
+| -------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| [ja-localization-review.prompt.md](ja-localization-review.prompt.md) | Review the Japanese UI copy and question labels, and save a report with proposed rewrites to `docs/` for approval. |
+
+When you add a prompt, add a row with a one-line description, and keep the rows sorted alphabetically.
 
 The original build specification, [start-prompt.prompt.md](../start-prompt.prompt.md), lives at the repository root instead.
 It describes the first build of the app rather than a reusable task, so do not move it here, where it would also become a slash command.
