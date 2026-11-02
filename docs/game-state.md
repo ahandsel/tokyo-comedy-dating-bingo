@@ -22,7 +22,9 @@ Two more values live in the store but are not part of the saved state:
 
 * `revealPending` is a ref set to `true` by `finish()` and cleared by the results screen after it has shown the reveal animation.
   Reopening a saved board from the welcome screen therefore skips the reveal and the confetti.
-* `loadedCorruptedData` and `storageAvailable` are booleans the welcome screen uses to show a one-line notice.
+* `loadedCorruptedData` and `storageAvailable` drive the one-line notice on the welcome screen.
+  `storageAvailable` is a plain boolean.
+  `loadedCorruptedData` is a read-only ref that turns `false` when `start()` begins a new game, because the new save replaces the unreadable one.
 
 
 ## Store API
@@ -66,12 +68,15 @@ Checks, in order:
 4. `currentQuestionIndex` must be an integer from 0 to 24.
 5. `answers` must be an object whose keys are question IDs and whose values are `yes` or `no`.
 6. `answerHistory` must contain unique question IDs that all have answers.
-7. `boardQuestionIds` must be `null` or a valid board (25 cells, `free` at index 12, each of the 24 IDs exactly once).
-8. A board requires all 24 answers.
-9. `results` requires a board.
-10. `playing` requires no board and an index below 24, so the current card always exists.
-11. Without a board, the history length must equal the index, so undo stays consistent.
-12. A fresh welcome state must have no answers, no history, and no board.
+7. `answerHistory` must hold exactly the answered IDs, in the same order as the start of `questionOrder`.
+   Every answer starts as a swipe, so an answer outside the history would block its card, and a history out of order would make undo jump to the wrong card.
+8. `boardQuestionIds` must be `null` or a valid board (25 cells, `free` at index 12, each of the 24 IDs exactly once).
+9. A board requires all 24 answers.
+10. `results` requires a board.
+11. `playing` requires no board.
+12. Without a board, the index must be below 24, so the current card always exists, also when a paused game resumes.
+13. Without a board, the history length must equal the index, so undo stays consistent.
+14. A fresh welcome state must have no answers, no history, and no board.
 
 Unknown extra properties are dropped; the loader rebuilds the object from the validated fields.
 
@@ -84,6 +89,8 @@ Old saves are then discarded safely rather than misread.
 * A `playing` game that was left via the back button is a **paused game**: the welcome screen offers "Continue game" and shows how many cards are answered.
 * A `results` board that was left via the back button is a **saved board**: the welcome screen offers "View my board".
 * When either exists, the start button reads "New game" instead of "Start swiping", and it asks for confirmation, because starting over discards them.
+  The confirmation opens with focus on "Cancel", so a doubled or held Enter keeps the saved game.
+  The "Play again" confirmation on the results screen works the same way.
 
 
 ## Storage keys

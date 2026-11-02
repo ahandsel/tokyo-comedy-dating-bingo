@@ -49,15 +49,20 @@ export function parseGameState(raw: unknown): GameState | null {
   if (!Array.isArray(s.answerHistory) || !s.answerHistory.every(isQuestionId)) return null
   if (new Set(s.answerHistory).size !== s.answerHistory.length) return null
   if (!s.answerHistory.every((id) => id in answers)) return null
-  if (s.boardQuestionIds !== null && !isValidBoard(s.boardQuestionIds)) return null
   const answerCount = Object.keys(answers).length
+  // Every answer starts as a swipe, and swipes follow the shuffled order.
+  // So the history holds exactly the answered IDs, and it is the start of questionOrder.
+  if (answerCount !== s.answerHistory.length) return null
+  const questionOrder = s.questionOrder as string[]
+  if (!s.answerHistory.every((id, i) => id === questionOrder[i])) return null
+  if (s.boardQuestionIds !== null && !isValidBoard(s.boardQuestionIds)) return null
   // A board only exists once every question has been answered.
   if (s.boardQuestionIds !== null && answerCount !== QUESTION_IDS.length) return null
   if (s.phase === 'results' && s.boardQuestionIds === null) return null
-  // While playing there is no board yet and the current card is always a real card.
-  if (s.phase === 'playing' && (s.boardQuestionIds !== null || s.currentQuestionIndex >= QUESTION_IDS.length)) {
-    return null
-  }
+  // While playing there is no board yet.
+  if (s.phase === 'playing' && s.boardQuestionIds !== null) return null
+  // Without a board the current card is always a real card, so a paused game also resumes on a card.
+  if (s.boardQuestionIds === null && s.currentQuestionIndex >= QUESTION_IDS.length) return null
   if (s.boardQuestionIds === null && s.answerHistory.length !== s.currentQuestionIndex) return null
   if (freshWelcome && (s.answerHistory.length !== 0 || Object.keys(answers).length !== 0 || s.boardQuestionIds !== null)) {
     return null

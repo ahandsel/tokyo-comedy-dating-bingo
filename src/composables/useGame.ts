@@ -33,7 +33,8 @@ export function createGameStore(options: GameStoreOptions = {}) {
   const random = options.random ?? Math.random
 
   const state = reactive<GameState>(storage.load() ?? createInitialState())
-  const loadedCorruptedData = storage.hadCorruptedData
+  /** True from a failed load until the player starts a new game, which replaces the unreadable save. */
+  const loadedCorruptedData = ref(storage.hadCorruptedData)
   const storageAvailable = storage.available
 
   /**
@@ -81,6 +82,7 @@ export function createGameStore(options: GameStoreOptions = {}) {
     fresh.phase = 'playing'
     fresh.questionOrder = shuffle(QUESTION_IDS, random)
     Object.assign(state, fresh)
+    loadedCorruptedData.value = false
   }
 
   /** From the welcome screen: continue a paused game, show a saved board, or start fresh. */
@@ -149,7 +151,7 @@ export function createGameStore(options: GameStoreOptions = {}) {
 
   return {
     state: readonly(state),
-    loadedCorruptedData,
+    loadedCorruptedData: readonly(loadedCorruptedData),
     storageAvailable,
     revealPending: readonly(revealPending),
     clearReveal,

@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest'
 import { createGameStore, createInitialState } from '../composables/useGame'
 import { GAME_STATE_KEY, createGameStorage, createMemoryStorage, parseGameState } from '../composables/useGameStorage'
 import { QUESTION_IDS } from '../data/questions'
-import { answerAll, memoryStore } from './helpers'
+import { allAnswers, answerAll, memoryStore } from './helpers'
 
 describe('parseGameState', () => {
   it('accepts a fresh welcome state and a complete results state', () => {
@@ -87,10 +87,11 @@ describe('persistence', () => {
     expect(gameStorage.load()).toBeNull()
     expect(gameStorage.hadCorruptedData).toBe(true)
     const store = createGameStore({ storage: gameStorage })
-    expect(store.loadedCorruptedData).toBe(true)
+    expect(store.loadedCorruptedData.value).toBe(true)
     expect(store.state.phase).toBe('welcome')
     store.start()
     expect(store.state.questionOrder).toHaveLength(24)
+    expect(store.loadedCorruptedData.value).toBe(false)
   })
 
   it('tolerates an unavailable storage backend', () => {
@@ -138,13 +139,35 @@ describe('stricter saved-state validation', () => {
     store.start()
     store.answer('yes')
     const good = JSON.parse(JSON.stringify(store.state))
-    const board = Array.from({ length: 25 }, (_, i) => (i === 12 ? 'free' : QUESTION_IDS[i < 12 ? i : i - 1]))
+    const board: string[] = []
+    for (const id of QUESTION_IDS) {
+      if (board.length === 12) board.push('free')
+      board.push(id)
+    }
     expect(parseGameState({ ...good, boardQuestionIds: board })).toBeNull()
     const history = [...QUESTION_IDS]
     const answers = Object.fromEntries(history.map((id) => [id, 'yes']))
     expect(
       parseGameState({ ...good, questionOrder: history, answerHistory: history, answers, currentQuestionIndex: 24 }),
     ).toBeNull()
+  })
+
+  it('rejects answers and undo history that do not follow the swipe order', () => {
+    const { store } = memoryStore(5)
+    store.start()
+    store.answer('yes')
+    const good = JSON.parse(JSON.stringify(store.state))
+    const order: string[] = good.questionOrder
+    // An answer with no swipe behind it would block its card when the player reaches it.
+    expect(parseGameState({ ...good, answers: { ...good.answers, [order[5]!]: 'no' } })).toBeNull()
+    // A history that skips ahead in the order would make undo jump to the wrong card.
+    expect(parseGameState({ ...good, answers: { [order[3]!]: 'yes' }, answerHistory: [order[3]] })).toBeNull()
+  })
+
+  it('rejects a paused game that has every answer but no board', () => {
+    const order = [...QUESTION_IDS]
+    const paused = { ...createInitialState(), questionOrder: order, answers: allAnswers('yes'), answerHistory: order, currentQuestionIndex: 24 }
+    expect(parseGameState(paused)).toBeNull()
   })
 
   it('accepts a saved board viewed from the welcome screen', () => {

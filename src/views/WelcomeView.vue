@@ -65,7 +65,7 @@ function confirmStart() {
         {{ t('welcome.resultsHint') }}
       </p>
 
-      <p v-if="game.loadedCorruptedData" class="hero__notice" role="status" data-testid="corrupted-notice">
+      <p v-if="game.loadedCorruptedData.value" class="hero__notice" role="status" data-testid="corrupted-notice">
         <TriangleAlert aria-hidden="true" />
         {{ t('errors.corruptedState') }}
       </p>
