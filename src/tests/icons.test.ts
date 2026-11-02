@@ -90,10 +90,10 @@ describe('Lucide icons', () => {
   })
 
   it('show the chosen artwork above the text of each swipe card', () => {
-    // The Lucide class of each card's icon. q21, q25, and q26 have no icon.
+    // The Lucide class of each card's icon.
     const cardIcons: Record<string, string> = {
       q01: 'lucide-face-expressionless',
-      q02: 'lucide-hand-coins',
+      q02: 'lucide-japanese-yen',
       q03: 'lucide-earth',
       q04: 'lucide-scan-face',
       q05: 'lucide-bed-double',
@@ -102,7 +102,7 @@ describe('Lucide icons', () => {
       q08: 'lucide-martini',
       q09: 'lucide-house',
       q10: 'lucide-magnet',
-      q11: 'lucide-gem',
+      q11: 'lucide-gem-ring',
       q12: 'lucide-banana',
       q13: 'lucide-anchor',
       q14: 'lucide-heart-handshake',
@@ -111,11 +111,16 @@ describe('Lucide icons', () => {
       q17: 'lucide-message-circle-heart',
       q18: 'lucide-door-open',
       q19: 'lucide-dog',
-      q20: 'lucide-smartphone',
+      q20: 'lucide-bee',
+      q21: 'lucide-mouth',
       q22: 'lucide-unlink',
       q23: 'lucide-thumbs-up',
       q24: 'lucide-origami',
+      q25: 'lucide-face-slightly-frowning',
+      q26: 'lucide-face-slightly-frowning',
       q27: 'lucide-graduation-cap',
+      q28: 'lucide-face-grinning',
+      q29: 'lucide-drama',
     }
     const mountCard = (questionId: string, locale: Locale) =>
       mountWithI18n(SwipeCard, locale, { questionId, text: getQuestionText(questionId, locale), number: 1, total: 24 })

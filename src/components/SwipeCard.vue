@@ -5,27 +5,30 @@ import {
   BedDouble,
   Dog,
   DoorOpen,
+  Drama,
   Earth,
   FaceExpressionless,
+  FaceGrinning,
+  FaceSlightlyFrowning,
   Flame,
-  Gem,
   Ghost,
   GraduationCap,
-  HandCoins,
   Heart,
   HeartHandshake,
   House,
+  JapaneseYen,
   Languages,
   Magnet,
   Martini,
   MessageCircleHeart,
+  Mouth,
   Origami,
   ScanFace,
-  Smartphone,
   ThumbsUp,
   Unlink,
   VenetianMask,
   X,
+  createLucideIcon,
 } from '@lucide/vue'
 import { computed, onBeforeUnmount, ref, type Component } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -55,13 +58,37 @@ const emit = defineEmits<{
 
 const { t } = useI18n()
 
-/**
- * Artwork shown above the text of a card, keyed by question ID.
- * The owner chose no icon for q21, q25, and q26.
+/*
+ * Icons from Lucide Lab (ISC license), copied here because @lucide/vue does not ship them.
+ * Source: https://github.com/lucide-icons/lucide-lab/tree/main/icons
  */
+const GemRing = createLucideIcon({
+  name: 'gem-ring',
+  size: 24,
+  node: [
+    ['path', { d: 'M13.2 8.1 16 4.4 14.4 2H9.6L8 4.4l2.8 3.7' }],
+    ['circle', { cx: '12', cy: '15', r: '7' }],
+  ],
+})
+
+const Bee = createLucideIcon({
+  name: 'bee',
+  size: 24,
+  node: [
+    ['path', { d: 'm8 2 1.88 1.88' }],
+    ['path', { d: 'M14.12 3.88 16 2' }],
+    ['path', { d: 'M9 7V6a3 3 0 1 1 6 0v1' }],
+    ['path', { d: 'M5 7a3 3 0 1 0 2.2 5.1C9.1 10 12 7 12 7s2.9 3 4.8 5.1A3 3 0 1 0 19 7Z' }],
+    ['path', { d: 'M7.56 12h8.87' }],
+    ['path', { d: 'M7.5 17h9' }],
+    ['path', { d: 'M15.5 10.7c.9.9 1.4 2.1 1.5 3.3 0 5.8-5 8-5 8s-5-2.2-5-8c.1-1.2.6-2.4 1.5-3.3' }],
+  ],
+})
+
+/** Artwork shown above the text of a card, keyed by question ID. */
 const CARD_ICONS: Partial<Record<string, Component>> = {
   q01: FaceExpressionless,
-  q02: HandCoins,
+  q02: JapaneseYen,
   q03: Earth,
   q04: ScanFace,
   q05: BedDouble,
@@ -70,7 +97,7 @@ const CARD_ICONS: Partial<Record<string, Component>> = {
   q08: Martini,
   q09: House,
   q10: Magnet,
-  q11: Gem, // the stone of a wedding ring
+  q11: GemRing, // a wedding ring
   q12: Banana,
   q13: Anchor, // the naval bases at Yokosuka and Sasebo
   q14: HeartHandshake,
@@ -79,11 +106,16 @@ const CARD_ICONS: Partial<Record<string, Component>> = {
   q17: MessageCircleHeart,
   q18: DoorOpen,
   q19: Dog, // the Hachiko statue in front of Shibuya Station
-  q20: Smartphone,
+  q20: Bee, // the logo of the Bumble app
+  q21: Mouth,
   q22: Unlink,
   q23: ThumbsUp,
   q24: Origami, // a paper crane
+  q25: FaceSlightlyFrowning, // q25 and q26 are a pair, so they share an icon
+  q26: FaceSlightlyFrowning,
   q27: GraduationCap,
+  q28: FaceGrinning, // laughing through a comedy night
+  q29: Drama, // the comedy and tragedy masks of a live show
 }
 
 const icon = computed(() => CARD_ICONS[props.questionId])
