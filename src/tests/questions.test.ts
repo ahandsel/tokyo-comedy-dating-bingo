@@ -1,14 +1,16 @@
 import { describe, expect, it } from 'vitest'
 import { QUESTION_COUNT, QUESTION_IDS, getQuestionText, isQuestionId, questions } from '../data/questions'
+import { DECK_SIZE } from '../utils/board'
 
 describe('question dataset', () => {
-  it('has exactly 24 questions', () => {
-    expect(questions).toHaveLength(24)
-    expect(QUESTION_COUNT).toBe(24)
+  it('has 27 questions, enough to deal a full 24-card board', () => {
+    expect(questions).toHaveLength(27)
+    expect(QUESTION_COUNT).toBe(27)
+    expect(DECK_SIZE).toBe(24)
   })
 
   it('has unique, stable IDs', () => {
-    expect(new Set(QUESTION_IDS).size).toBe(24)
+    expect(new Set(QUESTION_IDS).size).toBe(QUESTION_COUNT)
     expect(QUESTION_IDS.every((id) => /^q\d{2}$/.test(id))).toBe(true)
   })
 
@@ -22,11 +24,20 @@ describe('question dataset', () => {
   it('contains the corrected English labels', () => {
     const en = questions.map((q) => q.text.en)
     expect(en).toContain('Unsolicited dick pic')
-    expect(en).toContain('Unplanned visit to a military base')
+    expect(en).toContain('Visited a military base')
   })
 
-  it('keeps 告白 in the English label of q17 and renders it in Japanese', () => {
-    expect(getQuestionText('q17', 'en')).toBe('Experienced 告白')
+  it('adds the fan-made cards in both languages', () => {
+    expect(getQuestionText('q25', 'en')).toBe('Not Japanese enough')
+    expect(getQuestionText('q25', 'ja')).toBe('日本人らしさが足りない')
+    expect(getQuestionText('q26', 'en')).toBe('Not foreign enough')
+    expect(getQuestionText('q26', 'ja')).toBe('外国人らしさが足りない')
+    expect(getQuestionText('q27', 'en')).toBe('Date ended up being a language lesson')
+    expect(getQuestionText('q27', 'ja')).toBe('デートが語学レッスンになった')
+  })
+
+  it('keeps 告白 and its romaji in the English label of q17 and renders it in Japanese', () => {
+    expect(getQuestionText('q17', 'en')).toBe('Experienced 告白 (kokuhaku)')
     expect(getQuestionText('q17', 'ja')).toContain('告白')
   })
 

@@ -1,9 +1,10 @@
 import type { Locale, Question } from '../types/game'
 
 /**
- * The 24 approved questions. English labels are final.
+ * The approved question pool. Each game deals 24 of them at random, one per board square.
+ * English labels are final.
  * IDs are stable and are the only thing stored as answer keys.
- * The questions come from Yurié Collins and her show Tokyo Hoe Tales.
+ * q01 to q24 come from Yurié Collins and her show Tokyo Hoe Tales.
  * They belong to her and are not covered by the MIT License; see "Credits" in the README.
  */
 export const questions: Question[] = [
@@ -19,11 +20,11 @@ export const questions: Question[] = [
   { id: 'q10', text: { en: 'Have a type I know is bad for me', ja: 'ダメなタイプと分かっていても惹かれる' } },
   { id: 'q11', text: { en: 'Found out my date was married', ja: '相手が既婚者だと後で知った' } },
   { id: 'q12', text: { en: 'Unsolicited dick pic', ja: '頼んでもいない下半身の写真が届いた' } },
-  { id: 'q13', text: { en: 'Unplanned visit to a military base', ja: 'なりゆきで軍の基地に行った' } },
+  { id: 'q13', text: { en: 'Visited a military base', ja: '軍の基地に行った' } },
   { id: 'q14', text: { en: 'Friends with benefits', ja: 'セフレ関係になった' } },
   { id: 'q15', text: { en: 'Stayed because the sex was good', ja: 'セックスが良かったから関係を続けた' } },
   { id: 'q16', text: { en: 'My date didn’t speak my language', ja: '相手と言葉が通じなかった' } },
-  { id: 'q17', text: { en: 'Experienced 告白', ja: '告白を経験した' } },
+  { id: 'q17', text: { en: 'Experienced 告白 (kokuhaku)', ja: '告白を経験した' } },
   { id: 'q18', text: { en: 'Open relationship', ja: '恋人公認でほかの人ともデートした' } },
   { id: 'q19', text: { en: '“meet me in front of Hachiko”', ja: '「ハチ公前集合」と言われた' } },
   { id: 'q20', text: { en: 'Bumble date', ja: 'Bumbleで知り合った人とデートした' } },
@@ -31,6 +32,10 @@ export const questions: Question[] = [
   { id: 'q22', text: { en: 'I was un-matched mid convo', ja: '会話の途中でマッチを解除された' } },
   { id: 'q23', text: { en: 'Accidentally liked an ex’s photo', ja: '元恋人の写真にうっかり「いいね」した' } },
   { id: 'q24', text: { en: 'Japanese fetish', ja: '日本人フェチ' } },
+  // Fan additions written for this game, not taken from Tokyo Hoe Tales.
+  { id: 'q25', text: { en: 'Not Japanese enough', ja: '日本人らしさが足りない' } },
+  { id: 'q26', text: { en: 'Not foreign enough', ja: '外国人らしさが足りない' } },
+  { id: 'q27', text: { en: 'Date ended up being a language lesson', ja: 'デートが語学レッスンになった' } },
 ]
 
 export const QUESTION_COUNT = questions.length

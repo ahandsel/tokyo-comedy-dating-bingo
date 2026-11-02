@@ -1,12 +1,11 @@
 import { describe, expect, it } from 'vitest'
-import { QUESTION_IDS } from '../data/questions'
 import { FREE } from '../types/game'
 import { WINNING_LINES, evaluateBoard, isCellMarked } from '../utils/bingo'
 import { generateBoard } from '../utils/board'
 import { seededRandom } from '../utils/shuffle'
-import { allAnswers, answersForMarked } from './helpers'
+import { SAMPLE_DECK, allAnswers, answersForMarked } from './helpers'
 
-const board = generateBoard(QUESTION_IDS, seededRandom(42))
+const board = generateBoard(SAMPLE_DECK, seededRandom(42))
 
 describe('winning lines', () => {
   it('defines 12 lines of 5 cells', () => {

@@ -6,7 +6,11 @@ import { createGameStorage, createMemoryStorage } from '../composables/useGameSt
 import { createAppI18n, type AppI18n } from '../i18n'
 import type { Answer, Answers, BoardCellId, Locale } from '../types/game'
 import { QUESTION_IDS } from '../data/questions'
+import { DECK_SIZE } from '../utils/board'
 import { seededRandom } from '../utils/shuffle'
+
+/** The original 24 questions: a fixed, valid deck for tests that need one game's cards. */
+export const SAMPLE_DECK: readonly string[] = QUESTION_IDS.slice(0, DECK_SIZE)
 
 export function mountWithI18n(component: Component, locale: Locale = 'en', props: Record<string, unknown> = {}) {
   const i18n = createAppI18n(locale)
@@ -34,7 +38,7 @@ export function answerAll(store: GameStore, pick: (id: string, index: number) =>
 }
 
 export function allAnswers(value: Answer): Answers {
-  return Object.fromEntries(QUESTION_IDS.map((id) => [id, value]))
+  return Object.fromEntries(SAMPLE_DECK.map((id) => [id, value]))
 }
 
 export function answersForMarked(board: readonly BoardCellId[], markedIndices: number[]): Answers {

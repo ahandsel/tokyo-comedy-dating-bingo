@@ -8,7 +8,7 @@ import { generateBoard } from '../utils/board'
 import { evaluateBoard } from '../utils/bingo'
 import { QUESTION_IDS } from '../data/questions'
 import { seededRandom } from '../utils/shuffle'
-import { allAnswers } from './helpers'
+import { SAMPLE_DECK, allAnswers } from './helpers'
 
 const measure = (s: string) => s.length * 10
 
@@ -100,7 +100,7 @@ afterAll(() => {
 function optionsFor(locale: 'en' | 'ja'): ExportOptions {
   const i18n = createAppI18n(locale)
   const t = i18n.global.t
-  const board = generateBoard(QUESTION_IDS, seededRandom(21))
+  const board = generateBoard(SAMPLE_DECK, seededRandom(21))
   const answers = allAnswers('yes')
   const result = evaluateBoard(board, answers)
   return {
@@ -137,7 +137,7 @@ describe('drawBoardImage', () => {
     expect(drawn).toContain('BINGO!')
     expect(drawn).toContain('FREE SPACE')
     expect(drawn).toContain('Yes answers')
-    for (const id of QUESTION_IDS) {
+    for (const id of SAMPLE_DECK) {
       const firstWord = getQuestionText(id, 'en').split(' ')[0]!
       expect(drawn, id).toContain(firstWord)
     }

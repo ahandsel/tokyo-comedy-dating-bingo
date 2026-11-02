@@ -6,19 +6,30 @@ export const BOARD_SIZE = 5
 export const CELL_COUNT = BOARD_SIZE * BOARD_SIZE
 /** Zero-based: row 2, column 2, flat index 12. */
 export const CENTER_INDEX = 12
+/** Cards dealt per game: one for every square except the free centre. */
+export const DECK_SIZE = CELL_COUNT - 1
 
 /**
- * Build a randomized 5x5 arrangement from the 24 question IDs.
+ * Deal the cards for one game: DECK_SIZE question IDs drawn at random from the pool.
+ * The result is already shuffled, so it doubles as the swipe order.
+ */
+export function drawDeck(pool: readonly string[] = QUESTION_IDS, random: RandomSource = Math.random): string[] {
+  const unique = Array.from(new Set(pool))
+  if (unique.length < DECK_SIZE) {
+    throw new Error(`drawDeck needs at least ${DECK_SIZE} unique question IDs, received ${unique.length}`)
+  }
+  return shuffle(unique, random).slice(0, DECK_SIZE)
+}
+
+/**
+ * Build a randomized 5x5 arrangement from the 24 dealt question IDs.
  * Randomization is independent of answers and of the question order
  * the player saw during swiping.
  */
-export function generateBoard(
-  questionIds: readonly string[] = QUESTION_IDS,
-  random: RandomSource = Math.random,
-): BoardCellId[] {
+export function generateBoard(questionIds: readonly string[], random: RandomSource = Math.random): BoardCellId[] {
   const unique = Array.from(new Set(questionIds))
-  if (unique.length !== CELL_COUNT - 1) {
-    throw new Error(`generateBoard expects ${CELL_COUNT - 1} unique question IDs, received ${unique.length}`)
+  if (unique.length !== DECK_SIZE) {
+    throw new Error(`generateBoard expects ${DECK_SIZE} unique question IDs, received ${unique.length}`)
   }
   const shuffled = shuffle(unique, random)
   const board: BoardCellId[] = []
@@ -47,5 +58,5 @@ export function isValidBoard(value: unknown): value is BoardCellId[] {
   if (value[CENTER_INDEX] !== FREE) return false
   const ids = value.filter((_, i) => i !== CENTER_INDEX)
   if (!ids.every(isQuestionId)) return false
-  return new Set(ids).size === CELL_COUNT - 1 && ids.length === QUESTION_IDS.length
+  return new Set(ids).size === DECK_SIZE
 }

@@ -8,13 +8,13 @@ The store in `src/composables/useGame.ts` holds the whole game as one reactive o
 
 ```ts
 interface GameState {
-  version: number                      // GAME_STATE_VERSION, currently 1
-  phase: 'welcome' | 'playing' | 'results'
-  questionOrder: string[]              // the 24 IDs, shuffled once per game
-  currentQuestionIndex: number         // 0-based position in questionOrder
-  answers: Record<string, 'yes' | 'no'> // keyed by question ID
-  answerHistory: string[]              // IDs in the order answered, for undo
-  boardQuestionIds: (string | 'free')[] | null // 25 cells, generated after the last answer
+  version: number; // GAME_STATE_VERSION, currently 1
+  phase: 'welcome' | 'playing' | 'results';
+  questionOrder: string[]; // the 24 IDs dealt from the pool, shuffled once per game
+  currentQuestionIndex: number; // 0-based position in questionOrder
+  answers: Record<string, 'yes' | 'no'>; // keyed by question ID
+  answerHistory: string[]; // IDs in the order answered, for undo
+  boardQuestionIds: (string | 'free')[] | null; // 25 cells, generated after the last answer
 }
 ```
 
@@ -31,7 +31,7 @@ Two more values live in the store but are not part of the saved state:
 
 | Function           | Allowed in phase | Effect                                                                                     |
 | ------------------ | ---------------- | ------------------------------------------------------------------------------------------ |
-| `start()`          | any              | Replaces the state with a fresh `playing` game and a new shuffled order.                   |
+| `start()`          | any              | Replaces the state with a fresh `playing` game and deals 24 cards in a new shuffled order. |
 | `resume()`         | `welcome`        | Goes to `results` if a board exists, to `playing` if an order exists, otherwise `start()`. |
 | `answer(value)`    | `playing`        | Records the answer for the current card and advances. Returns `false` if ignored.          |
 | `undo()`           | `playing`        | Pops the history, deletes that answer, and moves the index back. Returns the reopened ID.  |
@@ -64,14 +64,15 @@ Checks, in order:
 
 1. `version` must equal `GAME_STATE_VERSION`.
 2. `phase` must be one of the three phases.
-3. `questionOrder` must be a permutation of all 24 IDs, except for a fresh welcome state where it is empty.
+3. `questionOrder` must hold 24 different question IDs from the pool, except for a fresh welcome state where it is empty.
 4. `currentQuestionIndex` must be an integer from 0 to 24.
 5. `answers` must be an object whose keys are question IDs and whose values are `yes` or `no`.
 6. `answerHistory` must contain unique question IDs that all have answers.
 7. `answerHistory` must hold exactly the answered IDs, in the same order as the start of `questionOrder`.
    Every answer starts as a swipe, so an answer outside the history would block its card, and a history out of order would make undo jump to the wrong card.
-8. `boardQuestionIds` must be `null` or a valid board (25 cells, `free` at index 12, each of the 24 IDs exactly once).
+8. `boardQuestionIds` must be `null` or a valid board (25 cells, `free` at index 12, and 24 different question IDs).
 9. A board requires all 24 answers.
+   It must also hold exactly the IDs in `questionOrder`, so it shows only the cards this game dealt.
 10. `results` requires a board.
 11. `playing` requires no board.
 12. Without a board, the index must be below 24, so the current card always exists, also when a paused game resumes.

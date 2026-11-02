@@ -46,8 +46,8 @@ Flag any change that breaks one of these rules from `AGENTS.md`, unless the pull
 * Everything runs in the browser: no backend, database, analytics, remote logging, API keys, or request that sends answers off the device.
   Google Fonts is the only third-party request, and answers never go into URLs.
 * There is one page and no router.
-* There are exactly 24 questions, and the board is always a 5x5 grid with the `FREE` cell at flat index 12.
-* Question IDs (`q01` to `q24`) are stable, and the English question labels in `src/data/questions.ts` are final.
+* Each game deals exactly 24 questions at random from the pool in `src/data/questions.ts`, and the board is always a 5x5 grid with the `FREE` cell at flat index 12.
+* Question IDs (`q01`, `q02`, and so on) are stable, and the English question labels in `src/data/questions.ts` are final.
 * Game logic stores, compares, and evaluates by question ID only, never by translated text, and `src/utils/` imports neither Vue nor Vue I18n.
 * The board shuffle is independent of the answers and the swipe order, and neither switching language nor editing an answer reshuffles it.
 * Switching language never restarts the game, and restarting never resets the language preference.

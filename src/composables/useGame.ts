@@ -2,8 +2,8 @@ import { computed, reactive, readonly, ref, watch } from 'vue'
 import { QUESTION_IDS } from '../data/questions'
 import type { Answer, BingoResult, GameState, GameStats } from '../types/game'
 import { evaluateBoard } from '../utils/bingo'
-import { generateBoard } from '../utils/board'
-import { shuffle, type RandomSource } from '../utils/shuffle'
+import { DECK_SIZE, drawDeck, generateBoard } from '../utils/board'
+import type { RandomSource } from '../utils/shuffle'
 import { GAME_STATE_VERSION, createGameStorage, type GameStorage } from './useGameStorage'
 
 export function createInitialState(): GameState {
@@ -49,7 +49,7 @@ export function createGameStore(options: GameStoreOptions = {}) {
     { deep: true, flush: 'sync' },
   )
 
-  const totalQuestions = QUESTION_IDS.length
+  const totalQuestions = DECK_SIZE
 
   const currentQuestionId = computed<string | null>(() =>
     state.phase === 'playing' ? (state.questionOrder[state.currentQuestionIndex] ?? null) : null,
@@ -70,7 +70,7 @@ export function createGameStore(options: GameStoreOptions = {}) {
   const stats = computed<GameStats>(() => {
     let yes = 0
     let no = 0
-    for (const id of QUESTION_IDS) {
+    for (const id of state.questionOrder) {
       if (state.answers[id] === 'yes') yes++
       else if (state.answers[id] === 'no') no++
     }
@@ -80,7 +80,7 @@ export function createGameStore(options: GameStoreOptions = {}) {
   function start() {
     const fresh = createInitialState()
     fresh.phase = 'playing'
-    fresh.questionOrder = shuffle(QUESTION_IDS, random)
+    fresh.questionOrder = drawDeck(QUESTION_IDS, random)
     Object.assign(state, fresh)
     loadedCorruptedData.value = false
   }
@@ -99,7 +99,9 @@ export function createGameStore(options: GameStoreOptions = {}) {
   const hasSavedResults = computed(() => state.phase === 'welcome' && state.boardQuestionIds !== null)
 
   function finish() {
-    state.boardQuestionIds = generateBoard(QUESTION_IDS, random)
+    // Pool order, not swipe order, so the board shuffle cannot depend on the order the cards were seen.
+    const dealt = QUESTION_IDS.filter((id) => state.questionOrder.includes(id))
+    state.boardQuestionIds = generateBoard(dealt, random)
     revealPending.value = true
     state.phase = 'results'
   }
@@ -133,7 +135,7 @@ export function createGameStore(options: GameStoreOptions = {}) {
 
   /** Edit an answer on the results screen. The board arrangement is untouched. */
   function setAnswer(id: string, value: Answer): boolean {
-    if (state.phase !== 'results' || !QUESTION_IDS.includes(id)) return false
+    if (state.phase !== 'results' || !state.questionOrder.includes(id)) return false
     state.answers[id] = value
     return true
   }

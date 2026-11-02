@@ -3,7 +3,9 @@ import { describe, expect, it } from 'vitest'
 import { createGameStore, createInitialState } from '../composables/useGame'
 import { GAME_STATE_KEY, createGameStorage, createMemoryStorage, parseGameState } from '../composables/useGameStorage'
 import { QUESTION_IDS } from '../data/questions'
-import { allAnswers, answerAll, memoryStore } from './helpers'
+import { generateBoard } from '../utils/board'
+import { seededRandom } from '../utils/shuffle'
+import { SAMPLE_DECK, allAnswers, answerAll, memoryStore } from './helpers'
 
 describe('parseGameState', () => {
   it('accepts a fresh welcome state and a complete results state', () => {
@@ -26,6 +28,8 @@ describe('parseGameState', () => {
     expect(parseGameState({ ...good, version: 99 })).toBeNull()
     expect(parseGameState({ ...good, phase: 'done' })).toBeNull()
     expect(parseGameState({ ...good, questionOrder: good.questionOrder.slice(1) })).toBeNull()
+    expect(parseGameState({ ...good, questionOrder: [...QUESTION_IDS] })).toBeNull()
+    expect(parseGameState({ ...good, questionOrder: [...good.questionOrder.slice(0, 23), good.questionOrder[1]] })).toBeNull()
     expect(parseGameState({ ...good, answers: { q01: 'maybe' } })).toBeNull()
     expect(parseGameState({ ...good, answers: { hacked: 'yes' } })).toBeNull()
     expect(parseGameState({ ...good, currentQuestionIndex: -1 })).toBeNull()
@@ -113,6 +117,9 @@ describe('persistence', () => {
     expect(store.stats.value).toEqual({ yes: 5, no: 19, winningLines: 1 })
     expect(store.state.boardQuestionIds).toEqual(board)
     expect(store.setAnswer('nope', 'yes')).toBe(false)
+    const undealt = QUESTION_IDS.find((id) => !store.state.questionOrder.includes(id))!
+    expect(store.setAnswer(undealt, 'yes')).toBe(false)
+    expect(store.state.answers[undealt]).toBeUndefined()
   })
 
   it('pauses and resumes a game from the welcome screen', () => {
@@ -129,7 +136,7 @@ describe('persistence', () => {
     expect(store.hasSavedResults.value).toBe(true)
     store.resume()
     expect(store.state.phase).toBe('results')
-    expect(Object.keys(store.state.answers)).toHaveLength(QUESTION_IDS.length)
+    expect(Object.keys(store.state.answers)).toHaveLength(24)
   })
 })
 
@@ -140,12 +147,12 @@ describe('stricter saved-state validation', () => {
     store.answer('yes')
     const good = JSON.parse(JSON.stringify(store.state))
     const board: string[] = []
-    for (const id of QUESTION_IDS) {
+    for (const id of SAMPLE_DECK) {
       if (board.length === 12) board.push('free')
       board.push(id)
     }
     expect(parseGameState({ ...good, boardQuestionIds: board })).toBeNull()
-    const history = [...QUESTION_IDS]
+    const history = [...SAMPLE_DECK]
     const answers = Object.fromEntries(history.map((id) => [id, 'yes']))
     expect(
       parseGameState({ ...good, questionOrder: history, answerHistory: history, answers, currentQuestionIndex: 24 }),
@@ -165,9 +172,27 @@ describe('stricter saved-state validation', () => {
   })
 
   it('rejects a paused game that has every answer but no board', () => {
-    const order = [...QUESTION_IDS]
+    const order = [...SAMPLE_DECK]
     const paused = { ...createInitialState(), questionOrder: order, answers: allAnswers('yes'), answerHistory: order, currentQuestionIndex: 24 }
     expect(parseGameState(paused)).toBeNull()
+  })
+
+  it('rejects a board that shows a card the game did not deal', () => {
+    const { store } = memoryStore(15)
+    store.start()
+    answerAll(store)
+    const saved = JSON.parse(JSON.stringify(store.state))
+    const undealt = QUESTION_IDS.find((id) => !saved.questionOrder.includes(id))!
+    const board = [...saved.boardQuestionIds]
+    board[0] = undealt
+    expect(parseGameState({ ...saved, boardQuestionIds: board })).toBeNull()
+  })
+
+  it('keeps a game saved before the pool grew past the original 24 questions', () => {
+    const order = [...SAMPLE_DECK]
+    const board = generateBoard(SAMPLE_DECK, seededRandom(1))
+    const saved = { ...createInitialState(), phase: 'results', questionOrder: order, currentQuestionIndex: 24, answers: allAnswers('yes'), answerHistory: order, boardQuestionIds: board }
+    expect(parseGameState(saved)).toEqual(saved)
   })
 
   it('accepts a saved board viewed from the welcome screen', () => {

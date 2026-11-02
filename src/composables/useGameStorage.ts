@@ -1,6 +1,6 @@
-import { QUESTION_IDS, isQuestionId } from '../data/questions'
-import type { Answer, Answers, GamePhase, GameState } from '../types/game'
-import { isValidBoard } from '../utils/board'
+import { isQuestionId } from '../data/questions'
+import { FREE, type Answer, type Answers, type BoardCellId, type GamePhase, type GameState } from '../types/game'
+import { DECK_SIZE, isValidBoard } from '../utils/board'
 
 export const GAME_STATE_KEY = 'tcdb:game'
 export const GAME_STATE_VERSION = 1
@@ -21,10 +21,11 @@ function isAnswer(value: unknown): value is Answer {
   return value === 'yes' || value === 'no'
 }
 
-function isPermutationOfQuestions(value: unknown): value is string[] {
-  if (!Array.isArray(value) || value.length !== QUESTION_IDS.length) return false
+/** True for one dealt deck: DECK_SIZE different question IDs from the pool. */
+function isDeck(value: unknown): value is string[] {
+  if (!Array.isArray(value) || value.length !== DECK_SIZE) return false
   if (!value.every(isQuestionId)) return false
-  return new Set(value).size === QUESTION_IDS.length
+  return new Set(value).size === DECK_SIZE
 }
 
 /**
@@ -37,9 +38,9 @@ export function parseGameState(raw: unknown): GameState | null {
   if (s.version !== GAME_STATE_VERSION) return null
   if (!PHASES.includes(s.phase as GamePhase)) return null
   const freshWelcome = s.phase === 'welcome' && Array.isArray(s.questionOrder) && s.questionOrder.length === 0
-  if (!freshWelcome && !isPermutationOfQuestions(s.questionOrder)) return null
+  if (!freshWelcome && !isDeck(s.questionOrder)) return null
   if (typeof s.currentQuestionIndex !== 'number' || !Number.isInteger(s.currentQuestionIndex)) return null
-  if (s.currentQuestionIndex < 0 || s.currentQuestionIndex > QUESTION_IDS.length) return null
+  if (s.currentQuestionIndex < 0 || s.currentQuestionIndex > DECK_SIZE) return null
   if (!s.answers || typeof s.answers !== 'object' || Array.isArray(s.answers)) return null
   const answers: Answers = {}
   for (const [id, value] of Object.entries(s.answers as Record<string, unknown>)) {
@@ -57,12 +58,15 @@ export function parseGameState(raw: unknown): GameState | null {
   if (!s.answerHistory.every((id, i) => id === questionOrder[i])) return null
   if (s.boardQuestionIds !== null && !isValidBoard(s.boardQuestionIds)) return null
   // A board only exists once every question has been answered.
-  if (s.boardQuestionIds !== null && answerCount !== QUESTION_IDS.length) return null
+  if (s.boardQuestionIds !== null && answerCount !== DECK_SIZE) return null
+  // The board shows exactly the cards this game dealt.
+  const board = s.boardQuestionIds as BoardCellId[] | null
+  if (board !== null && !board.every((cell) => cell === FREE || questionOrder.includes(cell))) return null
   if (s.phase === 'results' && s.boardQuestionIds === null) return null
   // While playing there is no board yet.
   if (s.phase === 'playing' && s.boardQuestionIds !== null) return null
   // Without a board the current card is always a real card, so a paused game also resumes on a card.
-  if (s.boardQuestionIds === null && s.currentQuestionIndex >= QUESTION_IDS.length) return null
+  if (s.boardQuestionIds === null && s.currentQuestionIndex >= DECK_SIZE) return null
   if (s.boardQuestionIds === null && s.answerHistory.length !== s.currentQuestionIndex) return null
   if (freshWelcome && (s.answerHistory.length !== 0 || Object.keys(answers).length !== 0 || s.boardQuestionIds !== null)) {
     return null
