@@ -28,10 +28,10 @@ const ja: MessageSchema = {
     matureNotice: '大人向けの恋愛ネタを含みます。',
     privacyNotice: '回答はこの端末にだけ保存されます。',
     credit:
-      '{name}のコメディに着想を得たファンメイドのゲームです。ビンゴのアイデアと質問は、{venue}で上演されたショー「Tokyo Hoe Tales」が元になっています。',
+      '{name}のコメディに着想を得たファンメイドのゲームです。ビンゴのアイデアと質問の多くは、彼女のショー「Tokyo Hoe Tales」が元になっています。',
     creditName: 'ユリエ コリンズ',
+    unofficialNotice: '非公式のファンゲームです。{venue}とは提携していません。',
     creditVenue: 'Tokyo Comedy Bar',
-    unofficialNotice: '非公式のファンゲームです。Tokyo Comedy Barとは提携していません。',
     newTabLink: '{label}（新しいタブで開きます）',
   },
   game: {
@@ -89,6 +89,8 @@ const ja: MessageSchema = {
     exporting: '画像を作成中…',
     exportFooter: 'プレイはこちら：{url}',
     answerUpdated: '回答を変更しました。ビンゴの数は{lines}です。',
+    shoutout:
+      'あなたの恋愛はもうコメディ。本物の笑いは、{name}のライブと、渋谷の{venue}で楽しめる英語と日本語のスタンドアップで！',
   },
   cell: {
     title: 'マスの詳細',

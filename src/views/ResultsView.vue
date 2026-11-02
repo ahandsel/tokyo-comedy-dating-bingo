@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { ArrowLeft, CircleCheck, Download, LoaderCircle, Pencil, Pointer, RotateCcw, Share, TriangleAlert } from '@lucide/vue'
+import { ArrowLeft, CircleCheck, Download, LoaderCircle, Mic, Pencil, Pointer, RotateCcw, Share, TriangleAlert } from '@lucide/vue'
 import { computed, onBeforeUnmount, onMounted, ref, shallowRef, watch, type Component } from 'vue'
-import { useI18n } from 'vue-i18n'
+import { I18nT, useI18n } from 'vue-i18n'
 import BingoBoard from '../components/BingoBoard.vue'
 import CellDetailModal from '../components/CellDetailModal.vue'
 import ConfirmDialog from '../components/ConfirmDialog.vue'
+import CreditLink from '../components/CreditLink.vue'
 import LanguageSwitcher from '../components/LanguageSwitcher.vue'
 import ResultSummary from '../components/ResultSummary.vue'
 import { useGame } from '../composables/useGame'
@@ -232,6 +233,14 @@ async function onShare() {
       <component :is="statusIcon" v-if="statusIcon" aria-hidden="true" /> {{ status }}
     </p>
 
+    <!-- Below the status line, so export messages stay next to the buttons. -->
+    <p v-if="revealed" class="results__shoutout" data-testid="shoutout">
+      <Mic class="results__shoutout-icon" aria-hidden="true" /> <I18nT keypath="results.shoutout" tag="span">
+        <template #name><CreditLink credit="artist" /></template>
+        <template #venue><CreditLink credit="venue" /></template>
+      </I18nT>
+    </p>
+
     <CellDetailModal
       :open="selected !== null"
       :text="selected?.text ?? ''"
@@ -301,6 +310,20 @@ async function onShare() {
   margin: 0;
   text-align: center;
   font-size: 0.9rem;
+  color: var(--berry);
+}
+
+.results__shoutout {
+  margin: 0;
+  padding: 14px 18px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.55);
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--ink-soft);
+}
+
+.results__shoutout-icon {
   color: var(--berry);
 }
 

@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { ExternalLink, GalleryVerticalEnd, Grid3x3, MoveHorizontal, Play, RotateCcw, Save, Star, TriangleAlert } from '@lucide/vue'
+import { GalleryVerticalEnd, Grid3x3, MoveHorizontal, Play, RotateCcw, Save, Star, TriangleAlert } from '@lucide/vue'
 import { computed, ref } from 'vue'
 import { I18nT, useI18n } from 'vue-i18n'
 import ConfirmDialog from '../components/ConfirmDialog.vue'
+import CreditLink from '../components/CreditLink.vue'
 import LanguageSwitcher from '../components/LanguageSwitcher.vue'
 import { useGame } from '../composables/useGame'
 
@@ -22,12 +23,6 @@ const rules = [
   { icon: Grid3x3, key: 'welcome.rule3' },
   { icon: Star, key: 'welcome.rule4' },
 ] as const
-
-/** Credit links open in a new tab so the game stays where the player left it. */
-const creditLinks = {
-  artist: 'https://linktr.ee/babypinkhaus',
-  venue: 'https://www.tokyocomedybar.com/',
-} as const
 
 /** Starting over throws away a saved game, so ask first. */
 function requestStart() {
@@ -115,30 +110,13 @@ function confirmStart() {
       <p class="notice"><span aria-hidden="true">&#128274;</span> {{ t('welcome.privacyNotice') }}</p>
       <p class="notice" data-testid="credit">
         <span aria-hidden="true">&#127908;</span> <I18nT keypath="welcome.credit" tag="span">
-          <template #name>
-            <a
-              class="notice__link"
-              :href="creditLinks.artist"
-              target="_blank"
-              rel="noopener noreferrer"
-              :aria-label="t('welcome.newTabLink', { label: t('welcome.creditName') })"
-              data-testid="credit-artist-link"
-            >{{ t('welcome.creditName') }}<ExternalLink class="notice__link-icon" aria-hidden="true" /></a>
-          </template>
-          <template #venue>
-            <a
-              class="notice__link"
-              :href="creditLinks.venue"
-              target="_blank"
-              rel="noopener noreferrer"
-              :aria-label="t('welcome.newTabLink', { label: t('welcome.creditVenue') })"
-              data-testid="credit-venue-link"
-            >{{ t('welcome.creditVenue') }}<ExternalLink class="notice__link-icon" aria-hidden="true" /></a>
-          </template>
+          <template #name><CreditLink credit="artist" /></template>
         </I18nT>
       </p>
       <p class="notice" data-testid="unofficial-notice">
-        <span aria-hidden="true">&#8505;&#65039;</span> {{ t('welcome.unofficialNotice') }}
+        <span aria-hidden="true">&#8505;&#65039;</span> <I18nT keypath="welcome.unofficialNotice" tag="span">
+          <template #venue><CreditLink credit="venue" /></template>
+        </I18nT>
       </p>
     </div>
 
@@ -315,22 +293,5 @@ function confirmStart() {
   text-align: center;
   font-size: 0.8rem;
   color: var(--muted-text);
-}
-
-.notice__link {
-  color: var(--berry);
-  font-weight: 700;
-  text-decoration: underline;
-  text-underline-offset: 2px;
-  /* Keep each linked name on one line. */
-  white-space: nowrap;
-}
-
-/* Shows that the link opens a new tab; the link's aria-label says the same to screen readers. */
-.notice__link-icon {
-  width: 0.95em;
-  height: 0.95em;
-  margin-left: 2px;
-  vertical-align: -0.1em;
 }
 </style>

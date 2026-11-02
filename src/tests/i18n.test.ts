@@ -205,7 +205,7 @@ describe('credits', () => {
   it('credits Yurié Collins and links out from the welcome screen in both languages', async () => {
     const { wrapper } = mountApp('en')
     expect(wrapper.find('[data-testid="credit"]').text()).toContain(
-      'A fan-made game inspired by the comedy of Yurié Collins. The Bingo idea and questions come from her show Tokyo Hoe Tales at Tokyo Comedy Bar.',
+      'A fan-made game inspired by the comedy of Yurié Collins. The Bingo idea and most of the questions come from her show Tokyo Hoe Tales.',
     )
     expect(wrapper.find('[data-testid="unofficial-notice"]').text()).toContain(
       'Unofficial fan game. Not affiliated with Tokyo Comedy Bar.',
@@ -215,19 +215,62 @@ describe('credits', () => {
     expect(artist.attributes('target')).toBe('_blank')
     expect(artist.attributes('rel')).toBe('noopener noreferrer')
     expect(artist.attributes('aria-label')).toBe('Yurié Collins (opens in a new tab)')
-    const venue = wrapper.find('[data-testid="credit-venue-link"]')
+    expect(wrapper.find('[data-testid="credit"] [data-testid="credit-venue-link"]').exists()).toBe(false)
+    const venue = wrapper.find('[data-testid="unofficial-notice"] [data-testid="credit-venue-link"]')
     expect(venue.attributes('href')).toBe('https://www.tokyocomedybar.com/')
+    expect(venue.attributes('target')).toBe('_blank')
+    expect(venue.attributes('rel')).toBe('noopener noreferrer')
     expect(venue.attributes('aria-label')).toBe('Tokyo Comedy Bar (opens in a new tab)')
 
     await wrapper.find('[data-locale="ja"]').trigger('click')
     expect(wrapper.find('[data-testid="credit"]').text()).toContain(
-      'ユリエ コリンズのコメディに着想を得たファンメイドのゲームです。ビンゴのアイデアと質問は、Tokyo Comedy Barで上演されたショー「Tokyo Hoe Tales」が元になっています。',
+      'ユリエ コリンズのコメディに着想を得たファンメイドのゲームです。ビンゴのアイデアと質問の多くは、彼女のショー「Tokyo Hoe Tales」が元になっています。',
     )
     expect(wrapper.find('[data-testid="unofficial-notice"]').text()).toContain(
       '非公式のファンゲームです。Tokyo Comedy Barとは提携していません。',
     )
     expect(wrapper.find('[data-testid="credit-artist-link"]').attributes('aria-label')).toBe(
       'ユリエ コリンズ（新しいタブで開きます）',
+    )
+    expect(
+      wrapper.find('[data-testid="unofficial-notice"] [data-testid="credit-venue-link"]').attributes('aria-label'),
+    ).toBe('Tokyo Comedy Bar（新しいタブで開きます）')
+    wrapper.unmount()
+  })
+
+  it('gives Yurié Collins and Tokyo Comedy Bar a shoutout on the results screen in both languages', async () => {
+    const { wrapper } = mountApp('en')
+    await wrapper.find('[data-testid="btn-start"]').trigger('click')
+    for (let i = 0; i < 24; i++) await wrapper.find('[data-testid="btn-no"]').trigger('click')
+    expect(wrapper.find('[data-testid="shoutout"]').exists()).toBe(false)
+    await new Promise((r) => setTimeout(r, 950))
+    await nextTick()
+
+    const shoutout = wrapper.find('[data-testid="shoutout"]')
+    expect(shoutout.text()).toContain(
+      'Your dating life is already a comedy show. See the real thing: Yurié Collins live, and stand-up in English and Japanese at Tokyo Comedy Bar in Shibuya.',
+    )
+    const artist = shoutout.find('[data-testid="credit-artist-link"]')
+    expect(artist.attributes('href')).toBe('https://linktr.ee/babypinkhaus')
+    expect(artist.attributes('target')).toBe('_blank')
+    expect(artist.attributes('rel')).toBe('noopener noreferrer')
+    expect(artist.attributes('aria-label')).toBe('Yurié Collins (opens in a new tab)')
+    const venue = shoutout.find('[data-testid="credit-venue-link"]')
+    expect(venue.attributes('href')).toBe('https://www.tokyocomedybar.com/')
+    expect(venue.attributes('target')).toBe('_blank')
+    expect(venue.attributes('rel')).toBe('noopener noreferrer')
+    expect(venue.attributes('aria-label')).toBe('Tokyo Comedy Bar (opens in a new tab)')
+
+    await wrapper.find('[data-locale="ja"]').trigger('click')
+    await nextTick()
+    expect(wrapper.find('[data-testid="shoutout"]').text()).toContain(
+      'あなたの恋愛はもうコメディ。本物の笑いは、ユリエ コリンズのライブと、渋谷のTokyo Comedy Barで楽しめる英語と日本語のスタンドアップで！',
+    )
+    expect(wrapper.find('[data-testid="shoutout"] [data-testid="credit-artist-link"]').attributes('aria-label')).toBe(
+      'ユリエ コリンズ（新しいタブで開きます）',
+    )
+    expect(wrapper.find('[data-testid="shoutout"] [data-testid="credit-venue-link"]').attributes('aria-label')).toBe(
+      'Tokyo Comedy Bar（新しいタブで開きます）',
     )
     wrapper.unmount()
   })

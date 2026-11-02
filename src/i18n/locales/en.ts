@@ -30,10 +30,10 @@ const en = {
     matureNotice: 'For adults only. Contains mature dating jokes.',
     privacyNotice: 'Your answers stay on your device.',
     credit:
-      'A fan-made game inspired by the comedy of {name}. The Bingo idea and questions come from her show Tokyo Hoe Tales at {venue}.',
+      'A fan-made game inspired by the comedy of {name}. The Bingo idea and most of the questions come from her show Tokyo Hoe Tales.',
     creditName: 'Yurié Collins',
+    unofficialNotice: 'Unofficial fan game. Not affiliated with {venue}.',
     creditVenue: 'Tokyo Comedy Bar',
-    unofficialNotice: 'Unofficial fan game. Not affiliated with Tokyo Comedy Bar.',
     newTabLink: '{label} (opens in a new tab)',
   },
   game: {
@@ -91,6 +91,8 @@ const en = {
     exporting: 'Making your image…',
     exportFooter: 'Play at {url}',
     answerUpdated: 'Answer changed. Bingo lines: {lines}.',
+    shoutout:
+      'Your dating life is already a comedy show. See the real thing: {name} live, and stand-up in English and Japanese at {venue} in Shibuya.',
   },
   cell: {
     title: 'Square details',
