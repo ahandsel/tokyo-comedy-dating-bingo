@@ -43,7 +43,6 @@ function confirmStart() {
     </div>
 
     <section class="hero">
-      <span class="hero__heart heart-motif" aria-hidden="true">&#10084;&#65039;</span>
       <h1 class="hero__title">
         <span class="hero__brand brand-script">{{ t('app.brand') }}</span>
         <span class="hero__bingo">{{ t('app.bingo') }}</span>
@@ -174,10 +173,6 @@ function confirmStart() {
   bottom: -18px;
   right: -8px;
   transform: rotate(16deg);
-}
-
-.hero__heart {
-  font-size: 2.4rem;
 }
 
 .hero__title {
