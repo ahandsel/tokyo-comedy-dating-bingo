@@ -264,7 +264,7 @@ export function drawBoardImage(ctx: CanvasRenderingContext2D, options: ExportOpt
   const boardSize = W - pad * 2
   const gap = Math.round(W * 0.012)
   const cellSize = (boardSize - gap * (BOARD_SIZE - 1)) / BOARD_SIZE
-  const headerH = Math.round(W * 0.34)
+  const headerH = Math.round(W * 0.375)
   const statsH = Math.round(W * 0.2)
   const footerH = Math.round(W * 0.07)
   const H = headerH + boardSize + statsH + footerH + pad
@@ -284,21 +284,21 @@ export function drawBoardImage(ctx: CanvasRenderingContext2D, options: ExportOpt
   ctx.textBaseline = 'middle'
   ctx.fillStyle = COLORS.berry
 
-  // Brand (script font) and BINGO word
-  ctx.font = `400 ${Math.round(W * 0.07)}px ${EXPORT_SCRIPT_STACK}`
-  ctx.fillText(labels.brand, W / 2, pad + W * 0.045)
+  // Brand (script font) and BINGO word, set close together as one logo
+  ctx.font = `400 ${Math.round(W * 0.06)}px ${EXPORT_SCRIPT_STACK}`
+  ctx.fillText(labels.brand, W / 2, pad + W * 0.042)
   ctx.fillStyle = COLORS.rose
-  ctx.font = `900 ${Math.round(W * 0.1)}px ${EXPORT_FONT_STACK}`
-  ctx.fillText(labels.bingoWord, W / 2, pad + W * 0.135)
+  ctx.font = `900 ${Math.round(W * 0.085)}px ${EXPORT_FONT_STACK}`
+  ctx.fillText(labels.bingoWord, W / 2, pad + W * 0.128)
 
-  // Heading and subtitle
+  // Heading and subtitle, with a wider gap above them than between them
   ctx.fillStyle = COLORS.berry
-  ctx.font = `900 ${Math.round(W * 0.05)}px ${EXPORT_FONT_STACK}`
-  ctx.fillText(labels.heading, W / 2, pad + W * 0.2)
+  ctx.font = `900 ${Math.round(W * 0.042)}px ${EXPORT_FONT_STACK}`
+  ctx.fillText(labels.heading, W / 2, pad + W * 0.212)
   ctx.fillStyle = COLORS.inkSoft
-  const sub = fitLines(ctx, labels.subtitle, W - pad * 2, 1, Math.round(W * 0.03), Math.round(W * 0.02), '700')
+  const sub = fitLines(ctx, labels.subtitle, W - pad * 2, 1, Math.round(W * 0.028), Math.round(W * 0.02), '700')
   ctx.font = `700 ${sub.size}px ${EXPORT_FONT_STACK}`
-  ctx.fillText(sub.lines[0] ?? '', W / 2, pad + W * 0.245)
+  ctx.fillText(sub.lines[0] ?? '', W / 2, pad + W * 0.265)
 
   // Board panel
   const boardTop = headerH
