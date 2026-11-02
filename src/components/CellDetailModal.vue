@@ -48,7 +48,8 @@ const otherLabel = computed(() => (otherAnswer.value === 'yes' ? t('results.mark
         <X v-else class="detail__mark" aria-hidden="true" />
         {{ t('cell.changeTo', { answer: otherLabel }) }}
       </button>
-      <button type="button" class="btn btn-secondary" data-testid="detail-close" @click="emit('close')">
+      <!-- Close gets the initial focus, so the Enter press that opened the dialog cannot also change the answer when it repeats. -->
+      <button type="button" class="btn btn-secondary" data-testid="detail-close" autofocus @click="emit('close')">
         {{ t('cell.close') }}
       </button>
     </div>

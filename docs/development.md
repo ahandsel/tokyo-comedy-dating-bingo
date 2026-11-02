@@ -49,7 +49,7 @@ The suite lives in `src/tests/` and runs in jsdom with Vue Test Utils.
 | `i18n.test`      | Detection, preferences, catalogue parity, switching on every screen, persistence, credits.  |
 | `swipe.test`     | Gestures, store rules, double-event guard, exit and return animations, flicks.              |
 | `keyboard.test`  | Page-wide arrow keys and undo shortcuts, key repeat, modifiers, cleanup, grid navigation.   |
-| `dialogs.test`   | The native dialog wrapper, start-over confirmation, corrupted-data notice.                  |
+| `dialogs.test`   | The native dialog wrapper, initial focus, start-over confirmation, corrupted-data notice.   |
 | `icons.test`     | Hidden icons, board marks by state, status and dialog icons, new-tab link icons.            |
 | `board.test`     | Shuffle, board structure, independence, stability.                                          |
 | `bingo.test`     | Winning-line evaluation.                                                                    |

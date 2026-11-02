@@ -24,6 +24,14 @@ describe('CellDetailModal copy', () => {
     expect(wrapper.find('[data-testid="detail-winning"]').text()).toContain('このマスはビンゴのライン上にあります。')
     expect(wrapper.find('[data-testid="detail-change"]').text()).toContain('「いいえ」に変える')
   })
+
+  // jsdom has no showModal(), so these tests pin the autofocus attribute that real browsers follow.
+  it('gives the initial focus to Close, so a repeated Enter cannot change the answer', async () => {
+    const { wrapper } = mountWithI18n(CellDetailModal, 'en', props)
+    await nextTick()
+    expect(wrapper.find('[data-testid="detail-close"]').attributes()).toHaveProperty('autofocus')
+    expect(wrapper.find('[data-testid="detail-change"]').attributes()).not.toHaveProperty('autofocus')
+  })
 })
 
 describe('ConfirmDialog', () => {
@@ -32,6 +40,13 @@ describe('ConfirmDialog', () => {
     await nextTick()
     expect(wrapper.find('svg.confirm__icon.lucide-triangle-alert').attributes('aria-hidden')).toBe('true')
     expect(wrapper.find('#confirm-title').text()).toBe('Sure?')
+  })
+
+  it('gives the initial focus to Cancel, not to the destructive action', async () => {
+    const { wrapper } = mountWithI18n(ConfirmDialog, 'en', { open: true, message: 'Sure?', confirmLabel: 'OK', cancelLabel: 'Cancel' })
+    await nextTick()
+    expect(wrapper.find('[data-testid="confirm-cancel"]').attributes()).toHaveProperty('autofocus')
+    expect(wrapper.find('[data-testid="confirm-ok"]').attributes()).not.toHaveProperty('autofocus')
   })
 })
 
@@ -109,6 +124,21 @@ describe('welcome screen start-over confirmation', () => {
     localStorage.setItem('tcdb:game', '{"version":1,')
     const { wrapper } = mountApp('en')
     expect(wrapper.find('[data-testid="corrupted-notice"]').exists()).toBe(true)
+    wrapper.unmount()
+  })
+
+  it('drops the unreadable-data notice once a new game is saved, in both languages', async () => {
+    localStorage.setItem('tcdb:game', '{"version":1,')
+    const { wrapper } = mountApp('en')
+    await wrapper.find('[data-testid="btn-start"]').trigger('click')
+    await wrapper.find('[data-testid="btn-yes"]').trigger('click')
+    await wrapper.find('.game__home').trigger('click')
+    await new Promise((r) => setTimeout(r, 0))
+    expect(wrapper.find('[data-testid="resume-hint"]').text()).toContain('1 of 24 cards answered')
+    expect(wrapper.find('[data-testid="corrupted-notice"]').exists()).toBe(false)
+    await wrapper.find('[data-locale="ja"]').trigger('click')
+    expect(wrapper.find('[data-testid="resume-hint"]').text()).toContain('24問中1問')
+    expect(wrapper.find('[data-testid="corrupted-notice"]').exists()).toBe(false)
     wrapper.unmount()
   })
 })

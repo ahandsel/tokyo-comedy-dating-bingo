@@ -22,10 +22,11 @@ const emit = defineEmits<{
     <component :is="icon" v-if="icon" class="confirm__icon" aria-hidden="true" />
     <p id="confirm-title" class="confirm__message">{{ message }}</p>
     <div class="confirm__actions">
-      <button type="button" class="btn btn-secondary" data-testid="confirm-cancel" @click="emit('cancel')">
+      <!-- Cancel gets the initial focus, so a doubled or held Enter cannot confirm the destructive action. -->
+      <button type="button" class="btn btn-secondary" data-testid="confirm-cancel" autofocus @click="emit('cancel')">
         {{ cancelLabel }}
       </button>
-      <button type="button" class="btn btn-primary" data-testid="confirm-ok" autofocus @click="emit('confirm')">
+      <button type="button" class="btn btn-primary" data-testid="confirm-ok" @click="emit('confirm')">
         {{ confirmLabel }}
       </button>
     </div>
