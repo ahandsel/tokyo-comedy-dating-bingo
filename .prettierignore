@@ -7,3 +7,9 @@ dist
 # App source: prettier-plugin-autocorrect owns the TS and Vue parsers, so it would
 # only re-space the Japanese UI copy (for example, 24問中8問目 -> 24 問中 8 問目).
 src/
+
+# Vendored third-party skills stay pristine for re-sync, as in .markdownlint-cli2.jsonc.
+skills/gh-address-comments/
+skills/gh-fix-ci/
+skills/security-best-practices/
+skills/security-threat-model/

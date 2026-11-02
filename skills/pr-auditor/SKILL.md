@@ -215,9 +215,9 @@ Order findings by severity, highest first, and give each a stable ID (`F1`, `F2`
 Then repeat every finding in one machine-readable table, same order, one line per cell, for PR-comment automation.
 Write "No findings." in place of the table when there are none.
 
-| ID | Severity | Confidence | Location    | Problem | Fix |
-| -- | -------- | ---------- | ----------- | ------- | --- |
-| F1 | ...      | ...        | `path:line` | ...     | ... |
+| ID  | Severity | Confidence | Location    | Problem | Fix |
+| --- | -------- | ---------- | ----------- | ------- | --- |
+| F1  | ...      | ...        | `path:line` | ...     | ... |
 
 
 ### The verdict

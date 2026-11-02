@@ -344,34 +344,34 @@ Suggested TypeScript model:
 
 type Locale = 'en' | 'ja';
 interface Question {
-  id: string;
-  text: Record<Locale, string>;
+id: string;
+text: Record<Locale, string>;
 }
 
 Example:
 
 const questions: Question[] = [
-  {
-    id: 'q01',
-    text: {
-      en: 'Knew as soon as the date started that it was a NO',
-      ja: 'デートが始まってすぐ「この人はナシ」と思った'
-    }
-  },
-  {
-    id: 'q12',
-    text: {
-      en: 'Unsolicited dick pic',
-      ja: '頼んでいない性器の写真が送られてきた'
-    }
-  },
-  {
-    id: 'q13',
-    text: {
-      en: 'Unplanned visit to a military base',
-      ja: '予定外に軍の基地を訪れた'
-    }
-  }
+{
+id: 'q01',
+text: {
+en: 'Knew as soon as the date started that it was a NO',
+ja: 'デートが始まってすぐ「この人はナシ」と思った'
+}
+},
+{
+id: 'q12',
+text: {
+en: 'Unsolicited dick pic',
+ja: '頼んでいない性器の写真が送られてきた'
+}
+},
+{
+id: 'q13',
+text: {
+en: 'Unplanned visit to a military base',
+ja: '予定外に軍の基地を訪れた'
+}
+}
 ];
 
 Include all 24 questions in the actual file.
@@ -392,13 +392,13 @@ Translation structure
 Suggested:
 
 src/
-  data/
-    questions.ts
-  i18n/
-    index.ts
-    locales/
-      en.ts
-      ja.ts
+data/
+questions.ts
+i18n/
+index.ts
+locales/
+en.ts
+ja.ts
 
 Store interface messages in the locale modules.
 
@@ -768,10 +768,10 @@ A completed line of 5 marked squares counts as Bingo.
 Result model
 
 interface BingoResult {
-  hasBingo: boolean;
-  winningLines: number[][];
-  winningCellIndices: number[];
-  totalWinningLines: number;
+hasBingo: boolean;
+winningLines: number[][];
+winningCellIndices: number[];
+totalWinningLines: number;
 }
 
 Support multiple completed lines.
@@ -786,20 +786,20 @@ Use only stable question IDs, board positions, answers, and free-space status.
 
 ⸻
 
- 1. State management
+1. State management
 
 Implement application state using Vue composables or Pinia if justified.
 
 Store:
 
 interface GameState {
-  version: number;
-  phase: 'welcome' | 'playing' | 'results';
-  questionOrder: string[];
-  currentQuestionIndex: number;
-  answers: Record<string, 'yes' | 'no'>;
-  answerHistory: string[];
-  boardQuestionIds: (string | 'free')[] | null;
+version: number;
+phase: 'welcome' | 'playing' | 'results';
+questionOrder: string[];
+currentQuestionIndex: number;
+answers: Record<string, 'yes' | 'no'>;
+answerHistory: string[];
+boardQuestionIds: (string | 'free')[] | null;
 }
 
 The structure may be adjusted if needed.
@@ -809,7 +809,7 @@ Separate language preference
 Store the language separately:
 
 interface UserPreferences {
-  locale: 'en' | 'ja';
+locale: 'en' | 'ja';
 }
 
 Language selection is a user preference, not part of the game outcome.
@@ -842,7 +842,7 @@ Sharing must be initiated explicitly by the user.
 
 ⸻
 
- 1. Undo, restart, and editing
+1. Undo, restart, and editing
 
 Undo
 
@@ -890,7 +890,7 @@ Changing an answer must:
 
 ⸻
 
- 1. Visual design
+1. Visual design
 
 Use a cohesive Tokyo dating-game aesthetic.
 
@@ -959,7 +959,7 @@ Implement:
 
 ⸻
 
- 1. Shareable Bingo image
+1. Shareable Bingo image
 
 Implement a downloadable Bingo card PNG if feasible.
 
@@ -1003,66 +1003,66 @@ Provide a fallback download option when Web Share API is unavailable.
 
 ⸻
 
- 1. Project architecture
+1. Project architecture
 
 Use a clear, maintainable structure:
 
 tokyo-comedy-dating-bingo/
-  public/
-    favicon.svg
-  src/
-    assets/
-    components/
-      LanguageSwitcher.vue
-      SwipeCard.vue
-      SwipeDeck.vue
-      SwipeControls.vue
-      ProgressIndicator.vue
-      BingoBoard.vue
-      BingoCell.vue
-      ResultSummary.vue
-    views/
-      WelcomeView.vue
-      GameView.vue
-      ResultsView.vue
-    composables/
-      useGame.ts
-      useGameStorage.ts
-      useLocale.ts
-    data/
-      questions.ts
-    i18n/
-      index.ts
-      locales/
-        en.ts
-        ja.ts
-    types/
-      game.ts
-      i18n.ts
-    utils/
-      shuffle.ts
-      bingo.ts
-      board.ts
-      exportImage.ts
-    tests/
-      questions.test.ts
-      i18n.test.ts
-      swipe.test.ts
-      board.test.ts
-      bingo.test.ts
-      storage.test.ts
-    App.vue
-    main.ts
-    style.css
-  .github/
-    workflows/
-      deploy.yml
-  index.html
-  vite.config.ts
-  package.json
-  pnpm-lock.yaml
-  tsconfig.json
-  README.md
+public/
+favicon.svg
+src/
+assets/
+components/
+LanguageSwitcher.vue
+SwipeCard.vue
+SwipeDeck.vue
+SwipeControls.vue
+ProgressIndicator.vue
+BingoBoard.vue
+BingoCell.vue
+ResultSummary.vue
+views/
+WelcomeView.vue
+GameView.vue
+ResultsView.vue
+composables/
+useGame.ts
+useGameStorage.ts
+useLocale.ts
+data/
+questions.ts
+i18n/
+index.ts
+locales/
+en.ts
+ja.ts
+types/
+game.ts
+i18n.ts
+utils/
+shuffle.ts
+bingo.ts
+board.ts
+exportImage.ts
+tests/
+questions.test.ts
+i18n.test.ts
+swipe.test.ts
+board.test.ts
+bingo.test.ts
+storage.test.ts
+App.vue
+main.ts
+style.css
+.github/
+workflows/
+deploy.yml
+index.html
+vite.config.ts
+package.json
+pnpm-lock.yaml
+tsconfig.json
+README.md
 
 Adjust the architecture where justified.
 
@@ -1072,7 +1072,7 @@ Avoid duplicated translations and unnecessary abstraction.
 
 ⸻
 
- 1. Testing requirements
+1. Testing requirements
 
 Use Vitest.
 
@@ -1113,59 +1113,59 @@ Verify:
 
 Swipe tests
 
- 1. Left swipe records NO.
- 2. Right swipe records YES.
- 3. Buttons and gestures produce equivalent answers.
- 4. Every question appears exactly once.
- 5. Undo restores the previous question.
- 6. Re-answering does not produce duplicate answers.
- 7. The game completes only after 24 answers.
+1. Left swipe records NO.
+2. Right swipe records YES.
+3. Buttons and gestures produce equivalent answers.
+4. Every question appears exactly once.
+5. Undo restores the previous question.
+6. Re-answering does not produce duplicate answers.
+7. The game completes only after 24 answers.
 
 Board tests
 
- 1. Board has 25 cells.
- 2. Center is FREE.
- 3. All 24 questions appear exactly once.
- 4. No question is lost during shuffling.
- 5. Answers remain linked to correct IDs.
- 6. Saved board order remains stable.
- 7. Board layout is independent of the selected language.
+1. Board has 25 cells.
+2. Center is FREE.
+3. All 24 questions appear exactly once.
+4. No question is lost during shuffling.
+5. Answers remain linked to correct IDs.
+6. Saved board order remains stable.
+7. Board layout is independent of the selected language.
 
 Bingo tests
 
- 1. Horizontal Bingo works.
- 2. Vertical Bingo works.
- 3. Both diagonals work.
- 4. Free center counts correctly.
- 5. All NO answers produce No Bingo.
- 6. All YES answers produce 12 winning lines.
- 7. Multiple wins count correctly.
- 8. Shared cells are deduplicated.
- 9. Four marked cells alone do not produce Bingo.
+1. Horizontal Bingo works.
+2. Vertical Bingo works.
+3. Both diagonals work.
+4. Free center counts correctly.
+5. All NO answers produce No Bingo.
+6. All YES answers produce 12 winning lines.
+7. Multiple wins count correctly.
+8. Shared cells are deduplicated.
+9. Four marked cells alone do not produce Bingo.
 10. Bingo results are identical in English and Japanese for the same saved game.
 
 Persistence tests
 
- 1. Refresh preserves answers.
- 2. Refresh preserves question order.
- 3. Refresh preserves final board positions.
- 4. Restart clears the game correctly.
- 5. Corrupted LocalStorage is handled safely.
- 6. Updating an answer recalculates Bingo without reshuffling.
+1. Refresh preserves answers.
+2. Refresh preserves question order.
+3. Refresh preserves final board positions.
+4. Restart clears the game correctly.
+5. Corrupted LocalStorage is handled safely.
+6. Updating an answer recalculates Bingo without reshuffling.
 
 Build and deployment tests
 
- 1. TypeScript checks pass.
- 2. Production Vite build succeeds.
- 3. pnpm frozen-lockfile installation works.
- 4. GitHub Pages asset paths are correct.
- 5. Browser refresh does not trigger a routing 404.
- 6. Japanese and English render correctly in production.
- 7. No missing translation keys appear in the production interface.
+1. TypeScript checks pass.
+2. Production Vite build succeeds.
+3. pnpm frozen-lockfile installation works.
+4. GitHub Pages asset paths are correct.
+5. Browser refresh does not trigger a routing 404.
+6. Japanese and English render correctly in production.
+7. No missing translation keys appear in the production interface.
 
 ⸻
 
- 1. GitHub Pages deployment with pnpm
+1. GitHub Pages deployment with pnpm
 
 Deploy the app to:
 
@@ -1246,7 +1246,7 @@ No server-side localization is required.
 
 ⸻
 
- 1. README documentation
+1. README documentation
 
 Create a complete README describing:
 
@@ -1291,7 +1291,7 @@ The README must not contain obsolete npm or Yarn setup instructions.
 
 ⸻
 
- 1. Implementation phases
+1. Implementation phases
 
 Follow these phases.
 
@@ -1405,7 +1405,7 @@ Complete the README and provide deployment instructions.
 
 ⸻
 
- 1. Definition of done
+1. Definition of done
 
 The application is complete only when:
 
@@ -1469,7 +1469,7 @@ UX and quality
 
 ⸻
 
- 1. Final instructions
+1. Final instructions
 
 Implement the actual application from start to finish.
 
