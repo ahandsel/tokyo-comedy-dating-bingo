@@ -1,6 +1,6 @@
 # Documentation
 
-This folder explains how the Tokyo Comedy Dating Bingo code works, and it holds the repository style guides and notes on ideas that are not built yet.
+This folder explains how the Tokyo Comedy Dating Bingo code works, and it holds the repository style guides and notes on proposed changes.
 Each page under "Pages" covers one layer of the app and points at the source files that implement it.
 
 
@@ -17,9 +17,17 @@ Each page under "Pages" covers one layer of the app and points at the source fil
 ## Ideas
 
 These notes describe possible changes.
-Nothing in them is built, and the code stays canonical.
+Each note says which parts of it are built, and the code stays canonical.
 
 * [bonus-cards-idea.md](bonus-cards-idea.md) - two bonus cards that give Tokyo Comedy Bar and Yurié Collins a shoutout inside the game, with three ways to add them.
+  Option A, which adds them to the question pool, is built, and the note lists the checks that remain before the cards ship.
+
+
+## Images
+
+The `images/` folder holds the screenshots at the top of the root [README](../README.md): the welcome, swipe, and results screens, each in English (`-en.png`) and Japanese (`-ja.png`).
+They were captured from `pnpm preview` in headless Chrome at a phone size of 390x844 CSS pixels and a device pixel ratio of 2.
+Capture them again when a change alters the look of one of those screens.
 
 
 ## Style guides

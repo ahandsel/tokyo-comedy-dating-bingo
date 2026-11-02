@@ -1,11 +1,19 @@
 # Tokyo Comedy Dating Bingo
 
+**Play now: [ahandsel.github.io/tokyo-comedy-dating-bingo](https://ahandsel.github.io/tokyo-comedy-dating-bingo/)**
+
 Tinder-style swiping meets a classic 5x5 Bingo card.
 Swipe through 24 Tokyo dating experiences, then reveal a randomized Bingo board built from your answers.
-Fully bilingual (English and Japanese), fully client-side, and deployable to GitHub Pages as a static site.
+The game runs in the browser on a phone or a computer, in English or Japanese, and your answers never leave your device.
 
-* Live site (after deployment): `https://<owner>.github.io/tokyo-comedy-dating-bingo/`
-* Stack: Vue 3, TypeScript, Vite, Vue I18n, Vitest, pnpm, GitHub Actions, GitHub Pages
+| Start                                                         | Swipe                                                                                  | Get your Bingo board                                                         |
+| ------------------------------------------------------------- | -------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| ![The welcome screen in English](docs/images/welcome-en.png)  | ![A swipe card about the Hachiko statue, dragged toward Yes](docs/images/swipe-en.png) | ![A finished Bingo board with two winning lines](docs/images/results-en.png) |
+| ![The welcome screen in Japanese](docs/images/welcome-ja.png) | ![The same swipe card in Japanese](docs/images/swipe-ja.png)                           | ![The same Bingo board in Japanese](docs/images/results-ja.png)              |
+
+The top row shows the game in English, and the bottom row shows it in Japanese.
+
+* Stack: Vue 3, TypeScript, Vite, Vue I18n, Vitest, pnpm, GitHub Actions, and GitHub Pages, deployed as a fully client-side static site.
 * Contains mature, dating-related humour.
   Intended for adults.
 * Unofficial and fan-made, inspired by the comedy of Yurié Collins.
@@ -21,8 +29,9 @@ The Bingo idea and the original 24 questions come from her show Tokyo Hoe Tales 
   It is not affiliated with [Tokyo Comedy Bar](https://www.tokyocomedybar.com/).
 * The MIT License in `LICENSE` covers the code only.
   The Bingo idea and the original 24 questions (`q01` to `q24` in `src/data/questions.ts`) belong to Yurié Collins, so do not reuse them without her permission.
-* Questions `q25` to `q27` are fan additions written for this game.
+* Questions `q25` to `q29` are fan additions written for this game.
   They do not come from her show.
+  `q28` and `q29` give Tokyo Comedy Bar and her live shows a shoutout on a swipe card.
 * The welcome screen and the share text credit her in both English and Japanese.
   Keep these credits when you change the copy.
 * The results screen gives her live shows and the stand-up shows at Tokyo Comedy Bar in Shibuya a shoutout, in both languages.
@@ -205,6 +214,8 @@ Runtime:
 
 Development: `vite`, `@vitejs/plugin-vue`, `vue-tsc`, `typescript` (Apache-2.0), `@vue/tsconfig`, `vitest`, `@vue/test-utils`, `jsdom`, `@types/node`, `@types/canvas-confetti` (all MIT unless noted).
 
+Icon data: the ring on the `q11` swipe card and the bee on the `q20` swipe card are copied from [Lucide Lab](https://github.com/lucide-icons/lucide-lab) under the ISC License, because `@lucide/vue` does not include them.
+
 Fonts: Noto Sans JP and Pacifico are loaded from Google Fonts under the SIL Open Font License.
 If the fonts fail to load, system fallbacks are used.
 
@@ -241,9 +252,9 @@ Formatting rules live in `.prettierrc.json5` and `.markdownlint-cli2.jsonc`, imp
 
 ## Testing
 
-`pnpm test` runs 117 tests across ten files in `src/tests/`:
+`pnpm test` runs 127 tests across ten files in `src/tests/`:
 
-* `questions.test.ts`: the 27-question pool, unique IDs, both translations present, corrected labels, the fan-made cards in both languages, 告白 rendering.
+* `questions.test.ts`: the 29-question pool, unique IDs, both translations present, corrected labels, the fan-made cards in both languages, 告白 rendering.
 * `i18n.test.ts`: browser-language detection, saved preference precedence, corrupted preferences, key parity between `en` and `ja`, English fallback, progress formatting, the switcher, full-app language switching on the welcome, swipe, and results screens (IDs, answers, order, and board preserved; preference preserved across restart and reload), the credits on the welcome screen and in the share text, and the shoutout on the results screen.
 * `swipe.test.ts`: pointer gestures (left, right, snap-back, visual feedback, non-interactive cards), store answers, dealing 24 different cards, undo, re-answering, 24-answer completion, button/keyboard/gesture equivalence, double-event protection, the preserved card element during the exit animation, undo while a card is leaving, a new answer right after an undo, and the flick rules.
 * `keyboard.test.ts`: page-wide arrow keys and undo shortcuts, key repeat, modifier keys, listener cleanup, and arrow-key navigation inside the Bingo grid.
@@ -252,7 +263,7 @@ Formatting rules live in `.prettierrc.json5` and `.markdownlint-cli2.jsonc`, imp
 * `board.test.ts`: shuffle, dealing 24 cards from the pool, 25 cells, FREE centre, all 24 dealt questions once, a board built from exactly the dealt cards, validation, independence from answers and swipe order, stable order across reload and edits.
 * `bingo.test.ts`: 12 lines, horizontal, vertical, both diagonals, free centre, all NO, all YES (12 lines), multiple wins with deduplication, four-in-a-row is not Bingo, language independence.
 * `storage.test.ts`: strict parsing, phase-consistency rules, boards that must hold the dealt cards, saves from before the pool grew, auto-save and reload of answers, order, index, and board, restart, corrupted storage, missing storage, answer editing without reshuffle, pause and resume, and the one-time reveal flag.
-* `export.test.ts`: tokenizing and wrapping for English and Japanese, canvas drawing with all 25 cells in each language, the board and stat marks drawn as Lucide icon shapes that match the shapes `@lucide/vue` renders, Web Share fallback.
+* `export.test.ts`: tokenizing and wrapping for English and Japanese, canvas drawing with all 25 cells in each language, the board and stat marks drawn as Lucide icon shapes that match the shapes `@lucide/vue` renders, Web Share fallback, saving to Photos on an iPhone.
 
 Build and deployment checks (`pnpm typecheck`, `pnpm build`, `pnpm install --frozen-lockfile`) run in CI before every deployment.
 End-to-end browser tests are not included; see Known limitations.
@@ -307,6 +318,7 @@ tokyo-comedy-dating-bingo/
   .github/workflows/deploy.yml   pnpm-based build, test, and Pages deployment
   .node-version                  Node 24 LTS pin
   docs/                          how the code works, one page per layer
+  docs/images/                   the screenshots at the top of this README
   public/favicon.svg
   scripts/index.sh               lists the pnpm scripts (pnpm index)
   src/
@@ -360,7 +372,7 @@ Edit `src/data/questions.ts`.
 Each entry needs a stable `id` and `text` for every locale:
 
 ```ts
-{ id: 'q28', text: { en: 'New experience', ja: '新しい経験' } }
+{ id: 'q30', text: { en: 'New experience', ja: '新しい経験' } }
 ```
 
 Rules enforced by tests and by the board generator:
@@ -419,9 +431,12 @@ The `.lucide` rule in `src/style.css` sizes every icon to the text around it, an
 That rule overrides the `size` and `stroke-width` props, so set a larger icon or a heavier stroke with a component class in CSS.
 Mark each icon `aria-hidden="true"` and keep a visible text label or an `aria-label` on the control, so the icon never carries meaning by itself.
 Use the same icon for the same meaning everywhere: `Check` and `X` for Yes and No squares, `Heart` for the Yes button and the free square, `Star` for winning lines, `Mic` for the comedy shoutout, `ExternalLink` for links that open a new tab, and `Undo2`, `RotateCcw`, `Download`, and `Share` for their actions.
-Most swipe cards show artwork above their text, such as `Dog` for the Hachiko statue on the `q19` card.
+Every swipe card shows artwork above its text, such as `Dog` for the Hachiko statue on the `q19` card.
 `CARD_ICONS` in `src/components/SwipeCard.vue` maps each question ID to its card artwork.
-The `q21`, `q25`, and `q26` cards have no artwork on purpose.
+The `q11` card shows a wedding ring, and the `q20` card shows a bee for the Bumble logo.
+`@lucide/vue` has neither icon, so `SwipeCard.vue` copies both from [Lucide Lab](https://github.com/lucide-icons/lucide-lab) and builds them with `createLucideIcon`.
+Copy any other Lucide Lab icon the same way, rather than adding the `@lucide/lab` package.
+The `q25` and `q26` cards are a pair, so both use `FaceSlightlyFrowning`.
 Card artwork must not reuse an icon that already has a meaning in this section.
 Status messages use `LoaderCircle` while the image is being made, `CircleCheck` for success, `Pencil` for a changed answer, and `TriangleAlert` for errors, warnings, and confirmations.
 A link that opens a new tab ends with `ExternalLink`.
@@ -443,5 +458,7 @@ The [docs/](docs/README.md) folder explains each layer: [architecture](docs/arch
   Offline or blocked, the app falls back to system fonts, so the title loses its script style and the export may render with a different sans-serif.
 * The Web Share API with files is only available on some browsers (notably mobile Safari and Chrome on Android).
   Elsewhere the Share button is hidden and "Save image" is used.
+* No web API can write straight to the Photos library on an iPhone or iPad.
+  "Save image" opens the share sheet there instead, and the player taps "Save Image" to add the image to Photos.
 * Native `<dialog>` is required for the modal backdrop and focus trapping; very old browsers show the dialog inline.
 * The board is fixed at 5x5, so each game shows 24 of the questions in the pool.
