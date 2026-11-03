@@ -437,6 +437,8 @@ The `q11` card shows a wedding ring, and the `q20` card shows a bee for the Bumb
 `@lucide/vue` has neither icon, so `SwipeCard.vue` copies both from [Lucide Lab](https://github.com/lucide-icons/lucide-lab) and builds them with `createLucideIcon`.
 Copy any other Lucide Lab icon the same way, rather than adding the `@lucide/lab` package.
 The `q25` and `q26` cards are a pair, so both use `FaceSlightlyFrowning`.
+The `q28` card uses `FaceGrinning` for laughter at a comedy night.
+Lucide has no other laughing face: `Laugh` is an old name for the same icon, and Lucide Lab has none either.
 Card artwork must not reuse an icon that already has a meaning in this section.
 Status messages use `LoaderCircle` while the image is being made, `CircleCheck` for success, `Pencil` for a changed answer, and `TriangleAlert` for errors, warnings, and confirmations.
 A link that opens a new tab ends with `ExternalLink`.
