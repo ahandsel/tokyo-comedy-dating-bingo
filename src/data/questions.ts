@@ -8,11 +8,11 @@ import type { Locale, Question } from '../types/game'
  * They belong to her and are not covered by the MIT License; see "Credits" in the README.
  */
 export const questions: Question[] = [
-  { id: 'q01', text: { en: 'Knew as soon as the date started that it was a NO', ja: '会った瞬間「ナシ」と思った' } },
+  { id: 'q01', text: { en: 'Knew as soon as the date started that it was a NO', ja: '会った瞬間ナシだと分かった' } },
   { id: 'q02', text: { en: 'Paid for the whole date', ja: 'デート代を全額払った' } },
   { id: 'q03', text: { en: 'Foreigner fetish', ja: '外国人フェチ' } },
   { id: 'q04', text: { en: 'Matched with someone I know', ja: '知り合いとマッチングした' } },
-  { id: 'q05', text: { en: 'Went to a love hotel', ja: 'ラブホテルに行った' } },
+  { id: 'q05', text: { en: 'Went to a love hotel', ja: 'ラブホに行った' } },
   { id: 'q06', text: { en: 'I was ghosted', ja: '急に連絡が来なくなった' } },
   { id: 'q07', text: { en: 'Had an affair', ja: '浮気をした' } },
   { id: 'q08', text: { en: 'Met at the club', ja: 'クラブで出会った' } },
@@ -21,7 +21,7 @@ export const questions: Question[] = [
   { id: 'q11', text: { en: 'Found out my date was married', ja: '相手が既婚者だと後で知った' } },
   { id: 'q12', text: { en: 'Unsolicited dick pic', ja: '頼んでもいない下半身の写真が届いた' } },
   { id: 'q13', text: { en: 'Visited a military base', ja: '軍の基地に行った' } },
-  { id: 'q14', text: { en: 'Friends with benefits', ja: 'セフレ関係になった' } },
+  { id: 'q14', text: { en: 'Friends with benefits', ja: 'セフレがいた' } },
   { id: 'q15', text: { en: 'Stayed because the sex was good', ja: 'セックスが良かったから関係を続けた' } },
   { id: 'q16', text: { en: 'My date didn’t speak my language', ja: '相手と言葉が通じなかった' } },
   { id: 'q17', text: { en: 'Experienced 告白 (kokuhaku)', ja: '告白を経験した' } },
@@ -30,7 +30,7 @@ export const questions: Question[] = [
   { id: 'q20', text: { en: 'Bumble date', ja: 'Bumbleで知り合った人とデートした' } },
   { id: 'q21', text: { en: 'Kissed in public in Tokyo', ja: '東京の街なかでキスした' } },
   { id: 'q22', text: { en: 'I was un-matched mid convo', ja: '会話の途中でマッチを解除された' } },
-  { id: 'q23', text: { en: 'Accidentally liked an ex’s photo', ja: '元恋人の写真にうっかり「いいね」した' } },
+  { id: 'q23', text: { en: 'Accidentally liked an ex’s photo', ja: '元恋人の写真にうっかりいいねした' } },
   { id: 'q24', text: { en: 'Japanese fetish', ja: '日本人フェチ' } },
   // Fan additions written for this game, not taken from Tokyo Hoe Tales.
   { id: 'q25', text: { en: 'Not Japanese enough', ja: '日本人らしさが足りない' } },
