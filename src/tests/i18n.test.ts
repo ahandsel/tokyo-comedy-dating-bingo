@@ -224,7 +224,7 @@ describe('credits', () => {
 
     await wrapper.find('[data-locale="ja"]').trigger('click')
     expect(wrapper.find('[data-testid="credit"]').text()).toContain(
-      'ユリエ コリンズのコメディに着想を得たファンメイドのゲームです。ビンゴのアイデアと質問の多くは、彼女のショー「Tokyo Hoe Tales」が元になっています。',
+      'ユリエ コリンズのコメディから生まれたファンメイドゲームです。ビンゴのアイデアも質問の多くも、本人のショー「Tokyo Hoe Tales」がもとになっています。',
     )
     expect(wrapper.find('[data-testid="unofficial-notice"]').text()).toContain(
       '非公式のファンゲームです。Tokyo Comedy Barとは提携していません。',
@@ -264,7 +264,7 @@ describe('credits', () => {
     await wrapper.find('[data-locale="ja"]').trigger('click')
     await nextTick()
     expect(wrapper.find('[data-testid="shoutout"]').text()).toContain(
-      'あなたの恋愛はもうコメディ。本物の笑いは、ユリエ コリンズのライブと、渋谷のTokyo Comedy Barで楽しめる英語と日本語のスタンドアップで！',
+      'あなたの恋愛はもうコメディ。本物の笑いが見たいなら、ユリエ コリンズのライブへ。渋谷のTokyo Comedy Barでは、英語と日本語のスタンドアップが観られます。',
     )
     expect(wrapper.find('[data-testid="shoutout"] [data-testid="credit-artist-link"]').attributes('aria-label')).toBe(
       'ユリエ コリンズ（新しいタブで開きます）',
@@ -283,7 +283,7 @@ describe('credits', () => {
     )
     i18n.global.locale.value = 'ja'
     expect(i18n.global.t('results.shareText', { yes: 10, no: 14, lines: 2, verdict: 'ビンゴ達成！', url })).toBe(
-      '私のTokyo Comedy Dating Bingo：はい10、いいえ14、ビンゴ2。ビンゴ達成！ユリエ コリンズのコメディショー「Tokyo Hoe Tales」に着想を得たファンメイドゲーム。プレイはこちら：https://example.com/tokyo-comedy-dating-bingo/',
+      'Tokyo Comedy Dating Bingoの結果は、はい10、いいえ14、ビンゴ2。ビンゴ達成！ユリエ コリンズのコメディショー「Tokyo Hoe Tales」から生まれたファンメイドゲームです。こちらで遊べます。https://example.com/tokyo-comedy-dating-bingo/',
     )
   })
 })
