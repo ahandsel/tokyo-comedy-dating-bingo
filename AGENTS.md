@@ -39,7 +39,7 @@ The repository itself is private, but the deployed site is public.
 * `.github/workflows/` - The deployment workflow.
   See "Continuous integration".
 * `.claude/` - Claude Code configuration: `settings.json` (permissions, attribution, and the lint hook), the `CLAUDE.md` stub that imports this file, and the `commands` and `skills` symlinks described below.
-* `docs/` - One page per layer of the code, plus the Markdown and commit style guides, notes on proposed changes, and the README screenshots in `docs/images/`, indexed by [docs/README.md](docs/README.md).
+* `docs/` - One page per layer of the code, plus the Markdown and commit style guides and the README screenshots in `docs/images/`, indexed by [docs/README.md](docs/README.md).
 * `memory/` - Durable cross-session notes for AI agents, indexed by [memory/MEMORY.md](memory/MEMORY.md).
 * `prompts/` - Reusable `*.prompt.md` files, indexed by [prompts/README.md](prompts/README.md).
   `.claude/commands` is a symlink to this folder, so each prompt is also a Claude Code slash command.
